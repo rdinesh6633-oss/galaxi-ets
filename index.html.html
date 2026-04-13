@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxi ETS — Electronics Inventory & Project Management</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f0e;
+  --bg2:#141614;
+  --bg3:#1a1c1a;
+  --bg4:#212421;
+  --bg5:#272a27;
+  --border:#2e312e;
+  --border2:#3a3e3a;
+  --text:#e8ebe5;
+  --text2:#9ba89a;
+  --text3:#637063;
+  --accent:#4ade80;
+  --accent2:#22c55e;
+  --accent-dim:rgba(74,222,128,0.12);
+  --accent-dim2:rgba(74,222,128,0.06);
+  --warn:#f59e0b;
+  --warn-dim:rgba(245,158,11,0.12);
+  --danger:#f87171;
+  --danger-dim:rgba(248,113,113,0.12);
+  --info:#60a5fa;
+  --info-dim:rgba(96,165,250,0.12);
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,0.12);
+  --font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --r:6px;
+  --r2:10px;
+  --sidebar:220px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+input,select,textarea,button{font-family:var(--font);font-size:13px}
+button{cursor:pointer}
+
+/* ── Layout ── */
+#app{display:flex;height:100vh}
+
+/* ── Sidebar ── */
+#sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transition:width .25s ease;
+}
+.logo{
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.logo-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.logo-mark svg{width:16px;height:16px;color:#0d0f0e}
+.logo-text{overflow:hidden}
+.logo-name{font-size:14px;font-weight:600;color:var(--text);letter-spacing:.02em}
+.logo-sub{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;margin-top:1px}
+
+.nav{flex:1;overflow-y:auto;padding:8px 0}
+.nav-group{margin-bottom:4px}
+.nav-label{
+  font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);padding:10px 16px 4px;font-family:var(--mono);
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 16px;cursor:pointer;
+  color:var(--text2);font-size:13px;font-weight:400;
+  transition:all .15s;position:relative;border-radius:0;
+  white-space:nowrap;overflow:hidden;
+}
+.nav-item:hover{color:var(--text);background:var(--bg3)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim2)}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--accent);border-radius:0 2px 2px 0;
+}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{
+  margin-left:auto;background:var(--danger-dim);color:var(--danger);
+  font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;
+  font-family:var(--mono);
+}
+
+.sidebar-footer{
+  padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:var(--bg3);border-radius:var(--r);cursor:pointer;
+  transition:background .15s;
+}
+.user-card:hover{background:var(--bg4)}
+.user-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#0d0f0e;flex-shrink:0;font-family:var(--mono);
+}
+.user-name{font-size:12px;font-weight:500;color:var(--text)}
+.user-role{font-size:10px;color:var(--text3);font-family:var(--mono)}
+
+/* ── Main ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── Topbar ── */
+#topbar{
+  height:52px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;flex-shrink:0;gap:16px;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text)}
+.topbar-breadcrumb{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:0 10px;height:32px;transition:border-color .15s;
+}
+.search-box:focus-within{border-color:var(--border2)}
+.search-box svg{width:13px;height:13px;color:var(--text3);flex-shrink:0}
+.search-box input{
+  background:transparent;border:none;outline:none;
+  color:var(--text);font-size:12px;width:180px;
+}
+.search-box input::placeholder{color:var(--text3)}
+
+.icon-btn{
+  width:32px;height:32px;border-radius:var(--r);
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);transition:all .15s;position:relative;
+}
+.icon-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.icon-btn svg{width:14px;height:14px}
+.notif-dot{
+  position:absolute;top:5px;right:5px;width:6px;height:6px;
+  background:var(--danger);border-radius:50%;border:1.5px solid var(--bg2);
+}
+
+/* ── Content ── */
+#content{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Page Header ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.page-header-left h1{font-size:20px;font-weight:600;color:var(--text);margin-bottom:4px}
+.page-header-left p{font-size:12px;color:var(--text3)}
+.page-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:0 14px;height:32px;border-radius:var(--r);
+  font-size:12px;font-weight:500;border:none;transition:all .15s;
+  white-space:nowrap;
+}
+.btn svg{width:13px;height:13px}
+.btn-primary{background:var(--accent);color:#0d0f0e}
+.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg4);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg5);border-color:var(--border2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(248,113,113,0.2)}
+.btn-danger:hover{background:rgba(248,113,113,0.2)}
+.btn-warn{background:var(--warn-dim);color:var(--warn);border:1px solid rgba(245,158,11,0.2)}
+.btn-sm{height:26px;padding:0 10px;font-size:11px}
+
+/* ── Metric Cards ── */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.metric-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:16px;position:relative;overflow:hidden;transition:border-color .15s;
+}
+.metric-card:hover{border-color:var(--border2)}
+.metric-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--accent);opacity:0;transition:opacity .2s;
+}
+.metric-card.accent::after{opacity:1}
+.metric-card.warn::after{background:var(--warn);opacity:1}
+.metric-card.danger::after{background:var(--danger);opacity:1}
+.metric-card.info::after{background:var(--info);opacity:1}
+.m-label{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.03em;margin-bottom:10px}
+.m-value{font-size:26px;font-weight:600;color:var(--text);font-family:var(--mono);margin-bottom:6px;line-height:1}
+.m-delta{font-size:11px;display:flex;align-items:center;gap:4px}
+.m-delta.up{color:var(--accent)}
+.m-delta.down{color:var(--danger)}
+.m-delta.neutral{color:var(--text3)}
+
+/* ── Cards ── */
+.card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  margin-bottom:16px;overflow:hidden;
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-body{padding:16px}
+.card-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+
+/* ── Grid ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{
+  font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);padding:10px 14px;border-bottom:1px solid var(--border);
+  font-family:var(--mono);text-align:left;white-space:nowrap;
+}
+tbody td{
+  padding:11px 14px;border-bottom:1px solid var(--border);
+  color:var(--text2);vertical-align:middle;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3);color:var(--text)}
+.td-main{color:var(--text)!important;font-weight:500}
+.td-mono{font-family:var(--mono);font-size:12px}
+
+/* ── Tags ── */
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;
+  font-family:var(--mono);letter-spacing:.02em;white-space:nowrap;
+}
+.tag-green{background:rgba(74,222,128,0.12);color:#4ade80}
+.tag-yellow{background:rgba(245,158,11,0.12);color:#f59e0b}
+.tag-red{background:rgba(248,113,113,0.12);color:#f87171}
+.tag-blue{background:rgba(96,165,250,0.12);color:#60a5fa}
+.tag-purple{background:rgba(167,139,250,0.12);color:#a78bfa}
+.tag-gray{background:rgba(99,112,99,0.2);color:#9ba89a}
+.tag-orange{background:rgba(251,146,60,0.12);color:#fb923c}
+.tag::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.input-field{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:0 10px;height:32px;color:var(--text);outline:none;transition:border-color .15s;
+}
+.input-field:focus{border-color:var(--accent)}
+.input-field::placeholder{color:var(--text3)}
+.input-search{min-width:200px;padding-left:32px;position:relative}
+.search-wrap{position:relative;display:inline-flex;align-items:center}
+.search-wrap svg{position:absolute;left:10px;width:13px;height:13px;color:var(--text3);pointer-events:none}
+select.input-field option{background:var(--bg3);color:var(--text)}
+.toolbar-spacer{flex:1}
+
+/* ── Flow Steps ── */
+.flow-steps{
+  display:flex;align-items:center;gap:0;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px 16px;margin-bottom:20px;overflow-x:auto;
+}
+.flow-step{display:flex;align-items:center;gap:0}
+.step-box{
+  display:flex;align-items:center;gap:8px;padding:6px 14px;
+  border-radius:var(--r);font-size:12px;font-weight:500;
+  background:var(--bg3);color:var(--text3);border:1px solid var(--border);
+  white-space:nowrap;transition:all .2s;
+}
+.step-box .step-num{
+  width:18px;height:18px;border-radius:50%;background:var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-family:var(--mono);font-weight:700;color:var(--text3);
+  flex-shrink:0;
+}
+.step-box.done{background:rgba(74,222,128,0.08);color:var(--accent);border-color:rgba(74,222,128,0.2)}
+.step-box.done .step-num{background:var(--accent);color:#0d0f0e}
+.step-box.active{background:rgba(96,165,250,0.1);color:var(--info);border-color:rgba(96,165,250,0.25)}
+.step-box.active .step-num{background:var(--info);color:#0d0f0e}
+.step-arrow{color:var(--border2);font-size:16px;padding:0 6px;flex-shrink:0}
+
+/* ── Alert Banner ── */
+.alert-banner{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:var(--r);margin-bottom:16px;
+  font-size:12px;border:1px solid;
+}
+.alert-warn{background:var(--warn-dim);color:var(--warn);border-color:rgba(245,158,11,0.25)}
+.alert-danger{background:var(--danger-dim);color:var(--danger);border-color:rgba(248,113,113,0.25)}
+.alert-info{background:var(--info-dim);color:var(--info);border-color:rgba(96,165,250,0.25)}
+.alert-success{background:var(--accent-dim);color:var(--accent);border-color:rgba(74,222,128,0.25)}
+.alert-banner svg{width:14px;height:14px;flex-shrink:0}
+
+/* ── Progress Bar ── */
+.prog-wrap{margin-bottom:10px}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px}
+.prog-track{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .3s}
+.prog-fill.ok{background:var(--accent)}
+.prog-fill.warn{background:var(--warn)}
+.prog-fill.low{background:var(--danger)}
+
+/* ── BOM Match Items ── */
+.bom-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:var(--r);margin-bottom:6px;
+  background:var(--bg3);border:1px solid var(--border);transition:border-color .15s;
+}
+.bom-item:hover{border-color:var(--border2)}
+.bom-status-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
+.bom-ok{background:rgba(74,222,128,0.15);color:var(--accent)}
+.bom-warn{background:rgba(245,158,11,0.15);color:var(--warn)}
+.bom-bad{background:rgba(248,113,113,0.15);color:var(--danger)}
+.bom-name{flex:1}
+.bom-part{font-size:12px;font-weight:500;color:var(--text)}
+.bom-code{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.bom-qty{font-size:11px;color:var(--text3);text-align:right;min-width:100px}
+
+/* ── Form ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.span2{grid-column:span 2}
+.form-label{font-size:11px;font-weight:500;color:var(--text2);font-family:var(--mono);letter-spacing:.03em}
+.form-control{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:0 10px;height:34px;color:var(--text);outline:none;transition:border-color .15s;
+  font-size:13px;
+}
+.form-control:focus{border-color:var(--accent)}
+textarea.form-control{height:70px;padding:8px 10px;resize:vertical}
+.form-control::placeholder{color:var(--text3)}
+select.form-control option{background:var(--bg3)}
+.form-hint{font-size:10px;color:var(--text3)}
+
+/* ── Activity Feed ── */
+.activity-list{display:flex;flex-direction:column}
+.activity-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.activity-item:last-child{border-bottom:none}
+.act-icon{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.act-icon svg{width:12px;height:12px}
+.act-body{flex:1;min-width:0}
+.act-text{font-size:12px;color:var(--text);line-height:1.4}
+.act-text strong{color:var(--text);font-weight:600}
+.act-meta{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px}
+
+/* ── Approval Item ── */
+.approval-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.approval-item:last-child{border-bottom:none}
+.appr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.appr-info{flex:1;min-width:0}
+.appr-title{font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.appr-sub{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.appr-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ── Modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  display:none;align-items:center;justify-content:center;z-index:1000;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  width:560px;max-width:95vw;max-height:90vh;overflow:hidden;
+  display:flex;flex-direction:column;animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.modal-title{font-size:14px;font-weight:600;color:var(--text)}
+.modal-close{
+  width:28px;height:28px;border-radius:var(--r);background:transparent;
+  border:1px solid var(--border);color:var(--text2);
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.modal-close:hover{background:var(--bg3);color:var(--text)}
+.modal-close svg{width:13px;height:13px}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+
+/* ── Toast ── */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:var(--r2);min-width:280px;
+  animation:toastIn .25s ease;font-size:12px;font-weight:500;
+  border:1px solid;backdrop-filter:blur(8px);
+}
+.toast-success{background:rgba(13,15,14,0.95);color:var(--accent);border-color:rgba(74,222,128,0.3)}
+.toast-error{background:rgba(13,15,14,0.95);color:var(--danger);border-color:rgba(248,113,113,0.3)}
+.toast-info{background:rgba(13,15,14,0.95);color:var(--info);border-color:rgba(96,165,250,0.3)}
+.toast-warn{background:rgba(13,15,14,0.95);color:var(--warn);border-color:rgba(245,158,11,0.3)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast svg{width:14px;height:14px;flex-shrink:0}
+
+/* ── Empty State ── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px 24px;color:var(--text3);gap:12px;
+}
+.empty-state svg{width:36px;height:36px;opacity:.3}
+.empty-state p{font-size:13px}
+
+/* ── Pagination ── */
+.pagination{display:flex;align-items:center;gap:4px}
+.page-btn{
+  width:28px;height:28px;border-radius:var(--r);background:var(--bg3);
+  border:1px solid var(--border);color:var(--text2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  font-family:var(--mono);transition:all .15s;
+}
+.page-btn:hover{background:var(--bg4);color:var(--text)}
+.page-btn.active{background:var(--accent);color:#0d0f0e;border-color:transparent;font-weight:700}
+.page-btn svg{width:11px;height:11px}
+
+/* ── Dropdown ── */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 6px);right:0;
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);
+  min-width:180px;z-index:200;display:none;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+.dropdown-menu.open{display:block;animation:fadeIn .15s ease}
+.dropdown-item{
+  padding:9px 14px;font-size:12px;color:var(--text2);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;gap:8px;
+}
+.dropdown-item:hover{background:var(--bg3);color:var(--text)}
+.dropdown-item svg{width:13px;height:13px}
+.dropdown-sep{height:1px;background:var(--border);margin:4px 0}
+
+/* ── Stock Level Colors ── */
+.stock-ok{color:var(--accent)}
+.stock-low{color:var(--warn)}
+.stock-out{color:var(--danger)}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  #sidebar{display:none}
+  .grid3{grid-template-columns:1fr}
+}
+
+/* ── Login ── */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.login-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  width:400px;padding:40px;
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.login-logo-mark{
+  width:40px;height:40px;border-radius:10px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-logo-mark svg{width:22px;height:22px;color:#0d0f0e}
+.login-logo-text{font-size:20px;font-weight:700;color:var(--text)}
+.login-logo-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.login-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:24px}
+.login-users{
+  background:var(--bg3);border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);margin-bottom:20px;
+}
+.login-user-row{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);
+}
+.login-user-row:last-child{border-bottom:none}
+.login-user-row:hover{background:var(--bg4)}
+.login-user-row.selected{background:var(--accent-dim)}
+.lu-avatar{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#0d0f0e;flex-shrink:0;font-family:var(--mono);
+}
+.lu-name{font-size:13px;font-weight:500;color:var(--text)}
+.lu-role{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.lu-check{margin-left:auto;color:var(--accent);display:none}
+.login-user-row.selected .lu-check{display:block}
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <div class="login-logo-text">Galaxi ETS</div>
+        <div class="login-logo-sub">Electronics Inventory System</div>
+      </div>
+    </div>
+    <div class="login-title">Sign in</div>
+    <div class="login-sub">Select your role to continue</div>
+    <div class="login-users" id="login-users"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;height:38px;font-size:13px" onclick="doLogin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      Sign In
+    </button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" style="display:none">
+  <nav id="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div class="logo-text"><div class="logo-name">Galaxi ETS</div><div class="logo-sub">v2.0 · Bengaluru</div></div>
+    </div>
+    <div class="nav" id="nav-menu"></div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="showDropdown('user-menu')">
+        <div class="user-avatar" id="user-avatar-sidebar">SM</div>
+        <div><div class="user-name" id="user-name-sidebar">Store Manager</div><div class="user-role" id="user-role-sidebar">store_manager</div></div>
+      </div>
+    </div>
+  </nav>
+  <div id="main">
+    <div id="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="input-field input-search" type="text" placeholder="Search components, WO, PR..." oninput="globalSearch(this.value)" id="global-search">
+        </div>
+        <button class="icon-btn" onclick="showPage('dashboard')" title="Dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="icon-btn" onclick="toggleNotifications()" title="Notifications" id="notif-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <div class="notif-dot" id="notif-dot"></div>
+        </button>
+        <div class="user-avatar" id="user-avatar-top" style="cursor:pointer;font-size:11px;width:32px;height:32px;font-weight:700" onclick="showPage('settings')">SM</div>
+      </div>
+    </div>
+    <div id="content">
+      <div class="page active" id="pg-dashboard"></div>
+      <div class="page" id="pg-inventory"></div>
+      <div class="page" id="pg-movements"></div>
+      <div class="page" id="pg-workorders"></div>
+      <div class="page" id="pg-bom"></div>
+      <div class="page" id="pg-itemcodes"></div>
+      <div class="page" id="pg-indents"></div>
+      <div class="page" id="pg-pr"></div>
+      <div class="page" id="pg-grn"></div>
+      <div class="page" id="pg-settings"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Container -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalIf(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Modal</div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA STORE
+// ══════════════════════════════════════════════
+const DB = {
+  currentUser: null,
+  users: [
+    {id:1,name:'Ravi Kumar',role:'store_manager',initials:'RK',color:'#4ade80'},
+    {id:2,name:'Priya Sharma',role:'project_coordinator',initials:'PS',color:'#60a5fa'},
+    {id:3,name:'Arjun Mehta',role:'engineer',initials:'AM',color:'#a78bfa'},
+    {id:4,name:'Sunita Rao',role:'erp_team',initials:'SR',color:'#f59e0b'},
+    {id:5,name:'Dr. K. Nair',role:'cto',initials:'KN',color:'#f87171'},
+    {id:6,name:'Deepak Pillai',role:'purchase_team',initials:'DP',color:'#fb923c'},
+  ],
+  roleLabels:{
+    store_manager:'Store Manager',
+    project_coordinator:'Project Coordinator',
+    engineer:'Engineer',
+    erp_team:'ERP Team',
+    cto:'CTO',
+    purchase_team:'Purchase Team',
+  },
+  inventory:[
+    {id:'GX-MCU-001',desc:'STM32F407VG MCU 32-bit ARM',mfr:'STMicro',mpn:'STM32F407VGT6',qty:48,reserved:40,alert:20,location:'Rack A1-C3',cat:'Microcontrollers',type:'project'},
+    {id:'GX-CAP-022',desc:'100nF 50V X7R 0402 MLCC',mfr:'Murata',mpn:'GRM188R71H104KA93D',qty:820,reserved:200,alert:200,location:'Tray B2-D1',cat:'Capacitors',type:'general'},
+    {id:'GX-RF-008',desc:'SMA Connector Female PCB Mount',mfr:'Amphenol',mpn:'132289',qty:8,reserved:0,alert:20,location:'Rack A3-B1',cat:'Connectors',type:'general'},
+    {id:'GX-PWR-015',desc:'LM317T Adjustable Voltage Regulator',mfr:'Texas Instruments',mpn:'LM317T/NOPB',qty:0,reserved:0,alert:10,location:'—',cat:'Power ICs',type:'general'},
+    {id:'GX-MCU-004',desc:'ESP32-WROOM-32 WiFi BT Module',mfr:'Espressif',mpn:'ESP32-WROOM-32E',qty:32,reserved:20,alert:10,location:'Rack A2-A4',cat:'Microcontrollers',type:'project'},
+    {id:'GX-RES-101',desc:'10kΩ 0402 1% Thick Film Resistor',mfr:'Yageo',mpn:'RC0402FR-0710KL',qty:1200,reserved:0,alert:300,location:'Tray C1-A1',cat:'Resistors',type:'general'},
+    {id:'GX-RF-012',desc:'CC2640R2F SimpleLink BLE SoC',mfr:'Texas Instruments',mpn:'CC2640R2FRGZT',qty:4,reserved:4,alert:5,location:'Rack A1-D2',cat:'RF Modules',type:'project'},
+    {id:'GX-PWR-008',desc:'LDO 3.3V 1A SOT-223',mfr:'Diodes Inc.',mpn:'AZ1117IH-3.3TRG1',qty:145,reserved:30,alert:50,location:'Tray B1-C4',cat:'Power ICs',type:'general'},
+    {id:'GX-MCU-009',desc:'STM32H743ZIT6 MCU 480MHz',mfr:'STMicro',mpn:'STM32H743ZIT6',qty:12,reserved:0,alert:5,location:'Rack A1-A1',cat:'Microcontrollers',type:'project'},
+    {id:'GX-DSP-003',desc:'TMS320C6748AZWTD3 DSP',mfr:'Texas Instruments',mpn:'TMS320C6748AZWTD3',qty:6,reserved:6,alert:2,location:'Rack A2-B2',cat:'DSPs',type:'project'},
+    {id:'GX-CAP-005',desc:'10µF 25V Tantalum 0805',mfr:'AVX',mpn:'TPSD106K025R0200',qty:280,reserved:50,alert:100,location:'Tray B3-A2',cat:'Capacitors',type:'general'},
+    {id:'GX-CON-011',desc:'40-pin 2.54mm Pin Header',mfr:'Wurth',mpn:'61304011121',qty:90,reserved:0,alert:30,location:'Shelf C2-D1',cat:'Connectors',type:'general'},
+  ],
+  workorders:[
+    {id:'WO-2024-031',title:'Radar Module v3',customer:'DRDO',duration:'90 days',desc:'High-resolution radar signal processing board for airborne application',by:'Priya Sharma',byId:2,erpStatus:'pending',ctoStatus:'pending',status:'erp_review',createdAt:'2024-04-11',bom:[]},
+    {id:'WO-2024-030',title:'Nav Unit Revision 2',customer:'HAL',duration:'60 days',desc:'Updated navigation unit with improved GPS accuracy and redundancy',by:'Arjun Mehta',byId:3,erpStatus:'approved',ctoStatus:'pending',status:'cto_approval',createdAt:'2024-04-10',bom:[]},
+    {id:'WO-2024-029',title:'Signal Processor Board',customer:'ISRO',duration:'120 days',desc:'Digital signal processing board for satellite ground station',by:'Priya Sharma',byId:2,erpStatus:'approved',ctoStatus:'approved',status:'active',createdAt:'2024-04-05',bom:['GX-MCU-001','GX-DSP-003','GX-RF-008']},
+    {id:'WO-2024-028',title:'Test Bench Alpha',customer:'Internal',duration:'30 days',desc:'Internal test bench for RF module validation',by:'Arjun Mehta',byId:3,erpStatus:'approved',ctoStatus:'approved',status:'complete',createdAt:'2024-03-20',bom:['GX-RF-012','GX-MCU-004']},
+    {id:'WO-2024-027',title:'Telemetry System v2',customer:'DRDO',duration:'75 days',desc:'Upgraded telemetry system with extended range and encryption',by:'Priya Sharma',byId:2,erpStatus:'rejected',ctoStatus:'pending',status:'rejected',createdAt:'2024-03-15',bom:[]},
+  ],
+  itemCodes:[
+    {id:'IC-089',mfr:'Xilinx',mpn:'XC7Z020-1CLG484C',desc:'FPGA Zynq-7000 SoC Dual ARM Cortex-A9',by:'Arjun Mehta',byId:3,ctoNote:'Review alternate: GX-MCU-009 may suffice',status:'pending',createdAt:'2024-04-12',assignedGPN:null},
+    {id:'IC-088',mfr:'Analog Devices',mpn:'AD9361BBCZ',desc:'RF Agile Transceiver 70MHz-6GHz',by:'Priya Sharma',byId:2,ctoNote:'',status:'pending',createdAt:'2024-04-11',assignedGPN:null},
+    {id:'IC-087',mfr:'TI',mpn:'TMS320C6748AZWTD3',desc:'C674x DSP 456MHz Fixed/Float',by:'Arjun Mehta',byId:3,ctoNote:'No suitable alternate found',status:'approved',createdAt:'2024-04-08',assignedGPN:'GX-DSP-003'},
+    {id:'IC-085',mfr:'NXP',mpn:'MPC5748GMPNV1R',desc:'Automotive S32 32-bit MCU',by:'Priya Sharma',byId:2,ctoNote:'Consider using GX-MCU-002 instead',status:'alternate',createdAt:'2024-04-02',assignedGPN:null},
+    {id:'IC-083',mfr:'Microchip',mpn:'ATSAM4SD32C-AU',desc:'ARM Cortex-M4 256KB SRAM',by:'Arjun Mehta',byId:3,ctoNote:'Approved. Standard part.',status:'approved',createdAt:'2024-03-28',assignedGPN:'GX-MCU-006'},
+  ],
+  purchaseRequests:[
+    {id:'PR-2024-018',component:'100nF MLCC Bulk Lot',gpn:'GX-CAP-022',qty:2000,project:'General Stock',by:'Ravi Kumar',byId:1,supplier:'',quotation:'',status:'open',createdAt:'2024-04-12'},
+    {id:'PR-2024-017',component:'LM317T Voltage Regulator',gpn:'GX-PWR-015',qty:50,project:'Radar Module v3',by:'Priya Sharma',byId:2,supplier:'Mouser Electronics',quotation:'₹3,200',status:'quotation',createdAt:'2024-04-10'},
+    {id:'PR-2024-016',component:'SMA Connector Female',gpn:'GX-RF-008',qty:100,project:'Nav Unit Rev 2',by:'Arjun Mehta',byId:3,supplier:'Digi-Key',quotation:'₹8,500',status:'po_raised',createdAt:'2024-04-08'},
+    {id:'PR-2024-015',component:'ESP32-WROOM-32E Module',gpn:'GX-MCU-004',qty:30,project:'Signal Processor',by:'Priya Sharma',byId:2,supplier:'Arrow Electronics',quotation:'₹12,600',status:'po_raised',createdAt:'2024-04-06'},
+    {id:'PR-2024-014',component:'STM32F407VGT6 MCU',gpn:'GX-MCU-001',qty:100,project:'General Stock',by:'Ravi Kumar',byId:1,supplier:'Arrow Electronics',quotation:'₹45,000',status:'closed',createdAt:'2024-03-28'},
+  ],
+  grn:[
+    {id:'GRN-108',prRef:'PR-2024-014',component:'100nF MLCC',gpn:'GX-CAP-022',supplier:'Mouser',qtyReceived:500,qcStatus:'pass',location:'Tray B2-D1',status:'stocked',createdAt:'2024-04-13',by:'Ravi Kumar'},
+    {id:'GRN-107',prRef:'PR-2024-013',component:'10kΩ Resistor 0402',gpn:'GX-RES-101',supplier:'Digi-Key',qtyReceived:2000,qcStatus:'pass',location:'Tray C1-A1',status:'stocked',createdAt:'2024-04-11',by:'Ravi Kumar'},
+    {id:'GRN-106',prRef:'PR-2024-012',component:'ESP32-WROOM-32E',gpn:'GX-MCU-004',supplier:'Arrow',qtyReceived:20,qcStatus:'pending',location:'Quarantine',status:'qc_hold',createdAt:'2024-04-10',by:'Ravi Kumar'},
+    {id:'GRN-105',prRef:'PR-2024-011',component:'AMS1117-3.3V LDO',gpn:'GX-PWR-008',supplier:'LCSC',qtyReceived:30,qcStatus:'fail',location:'Rejected Bin',status:'rejected',createdAt:'2024-04-09',by:'Ravi Kumar'},
+  ],
+  indents:[
+    {id:'ISS-214',type:'assembly',gpn:'GX-MCU-001',desc:'STM32F407VG MCU',qty:10,project:'Radar Module v3',woRef:'WO-2024-029',by:'Ravi Kumar',byId:1,status:'issued',createdAt:'2024-04-13'},
+    {id:'ISS-213',type:'testing',gpn:'GX-RF-012',desc:'CC2640R2F BLE SoC',qty:2,project:'Test Bench Alpha',woRef:'WO-2024-028',by:'Arjun Mehta',byId:3,status:'issued',createdAt:'2024-04-12'},
+    {id:'ISS-212',type:'assembly',gpn:'GX-CAP-022',desc:'100nF MLCC',qty:200,project:'Nav Unit Rev 2',woRef:'WO-2024-030',by:'Ravi Kumar',byId:1,status:'issued',createdAt:'2024-04-11'},
+    {id:'ISS-211',type:'testing',gpn:'GX-MCU-009',desc:'STM32H743 MCU',qty:2,project:'Signal Processor',woRef:'WO-2024-029',by:'Arjun Mehta',byId:3,status:'pending',createdAt:'2024-04-13'},
+  ],
+  movements:[
+    {date:'2024-04-13 10:42',gpn:'GX-MCU-001',desc:'STM32F407VG',type:'issued',qty:-10,ref:'ISS-214',project:'Radar v3',user:'Ravi K.'},
+    {date:'2024-04-13 09:15',gpn:'GX-CAP-022',desc:'100nF MLCC',type:'received',qty:500,ref:'GRN-108',project:'—',user:'Ravi K.'},
+    {date:'2024-04-12 16:30',gpn:'GX-MCU-004',desc:'ESP32-WROOM',type:'reserved',qty:-20,ref:'WO-2024-031',project:'Radar v3',user:'Priya S.'},
+    {date:'2024-04-12 14:00',gpn:'GX-RF-008',desc:'SMA Connector',type:'issued',qty:-5,ref:'ISS-209',project:'Nav Unit',user:'Arjun M.'},
+    {date:'2024-04-11 11:20',gpn:'GX-RES-101',desc:'10kΩ 0402',type:'received',qty:2000,ref:'GRN-107',project:'—',user:'Ravi K.'},
+    {date:'2024-04-10 15:45',gpn:'GX-PWR-008',desc:'LDO 3.3V',type:'adjusted',qty:30,ref:'ADJ-012',project:'—',user:'Ravi K.'},
+    {date:'2024-04-10 09:00',gpn:'GX-DSP-003',desc:'TMS320C6748',type:'reserved',qty:-6,ref:'WO-2024-029',project:'Signal Proc.',user:'Priya S.'},
+    {date:'2024-04-09 16:00',gpn:'GX-PWR-008',desc:'AMS1117 LDO',type:'rejected',qty:30,ref:'GRN-105',project:'—',user:'Ravi K.'},
+  ]
+};
+
+// ══════════════════════════════════════════════
+// PERMISSIONS
+// ══════════════════════════════════════════════
+const PERMS = {
+  store_manager:   ['dashboard','inventory','movements','indents','grn','settings'],
+  project_coordinator:['dashboard','inventory','movements','workorders','bom','itemcodes','indents','pr','settings'],
+  engineer:        ['dashboard','inventory','movements','indents','settings'],
+  erp_team:        ['dashboard','inventory','movements','workorders','settings'],
+  cto:             ['dashboard','inventory','movements','workorders','itemcodes','settings'],
+  purchase_team:   ['dashboard','inventory','movements','pr','grn','settings'],
+};
+const ALL_NAV=[
+  {group:'Overview',items:[{id:'dashboard',label:'Dashboard',icon:'grid'}]},
+  {group:'Inventory',items:[{id:'inventory',label:'Components',icon:'box'},{id:'movements',label:'Stock Movements',icon:'activity'}]},
+  {group:'Projects',items:[{id:'workorders',label:'Work Orders',icon:'file-text',badge:'wo'},{id:'bom',label:'BOM Matching',icon:'layers'},{id:'itemcodes',label:'Item Codes',icon:'tag',badge:'ic'},{id:'indents',label:'Indents / Issues',icon:'send'}]},
+  {group:'Procurement',items:[{id:'pr',label:'Purchase Requests',icon:'shopping-cart'},{id:'grn',label:'Goods Inward & QC',icon:'package'}]},
+  {group:'System',items:[{id:'settings',label:'Settings',icon:'settings'}]},
+];
+
+// ══════════════════════════════════════════════
+// ICONS
+// ══════════════════════════════════════════════
+const ICONS={
+  grid:`<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>`,
+  box:`<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>`,
+  activity:`<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,
+  'file-text':`<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>`,
+  layers:`<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>`,
+  tag:`<path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>`,
+  send:`<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
+  'shopping-cart':`<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>`,
+  package:`<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>`,
+  settings:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>`,
+  plus:`<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
+  download:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
+  upload:`<polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>`,
+  check:`<polyline points="20 6 9 17 4 12"/>`,
+  x:`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+  'alert-triangle':`<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`,
+  info:`<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+  'refresh-cw':`<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>`,
+  search:`<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>`,
+  'trending-up':`<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>`,
+  eye:`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`,
+  edit:`<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
+  trash:`<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/>`,
+  'chevron-right':`<polyline points="9 18 15 12 9 6"/>`,
+  'chevron-left':`<polyline points="15 18 9 12 15 6"/>`,
+  'more-vertical':`<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>`,
+};
+function icon(name,size=14){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`;
+}
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  const ic={success:'check',error:'x',info:'info',warn:'alert-triangle'}[type]||'info';
+  t.className=`toast toast-${type}`;
+  t.innerHTML=icon(ic)+`<span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},3000);
+}
+function openModal(title,bodyHTML,footerHTML=''){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=bodyHTML;
+  document.getElementById('modal-footer').innerHTML=footerHTML||`<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open')}
+function closeModalIf(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+function showDropdown(id){
+  const m=document.getElementById(id);
+  if(m)m.classList.toggle('open');
+  document.addEventListener('click',function h(e){
+    if(!e.target.closest(`#${id}`)&&!e.target.closest(`[onclick*="${id}"]`)){
+      if(m)m.classList.remove('open');document.removeEventListener('click',h);
+    }
+  });
+}
+function stockStatus(item){
+  const avail=item.qty-item.reserved;
+  if(avail<=0&&item.qty===0)return{tag:'tag-red',label:'Out of Stock'};
+  if(item.qty<=item.alert)return{tag:'tag-yellow',label:'Low Stock'};
+  return{tag:'tag-green',label:'Available'};
+}
+function woStatusTag(s){
+  const m={erp_review:['tag-yellow','ERP Review'],cto_approval:['tag-blue','CTO Approval'],active:['tag-green','Active'],complete:['tag-gray','Complete'],rejected:['tag-red','Rejected']};
+  return m[s]||['tag-gray',s];
+}
+function prStatusTag(s){
+  const m={open:['tag-yellow','Open'],quotation:['tag-blue','Quotation Added'],po_raised:['tag-purple','PO Raised'],closed:['tag-green','Closed']};
+  return m[s]||['tag-gray',s];
+}
+function grnQcTag(s){
+  const m={pass:['tag-green','Pass'],fail:['tag-red','Fail'],pending:['tag-yellow','Pending']};
+  return m[s]||['tag-gray',s];
+}
+function grnStatusTag(s){
+  const m={stocked:['tag-green','Stocked'],qc_hold:['tag-yellow','QC Hold'],rejected:['tag-red','Rejected']};
+  return m[s]||['tag-gray',s];
+}
+function icStatusTag(s){
+  const m={pending:['tag-yellow','CTO Review'],approved:['tag-green','Approved'],alternate:['tag-blue','Alt. Suggested'],rejected:['tag-red','Rejected']};
+  return m[s]||['tag-gray',s];
+}
+function can(page){
+  if(!DB.currentUser)return false;
+  return (PERMS[DB.currentUser.role]||[]).includes(page);
+}
+function getBadgeCount(id){
+  if(id==='workorders'){
+    return DB.workorders.filter(w=>w.status==='erp_review'||w.status==='cto_approval').length||'';
+  }
+  if(id==='itemcodes'){
+    return DB.itemCodes.filter(i=>i.status==='pending').length||'';
+  }
+  return '';
+}
+
+// ══════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════
+let selectedUserId=1;
+function buildLoginUsers(){
+  const el=document.getElementById('login-users');
+  el.innerHTML=DB.users.map(u=>`
+    <div class="login-user-row${u.id===selectedUserId?' selected':''}" onclick="selectUser(${u.id})">
+      <div class="lu-avatar" style="background:${u.color}">${u.initials}</div>
+      <div><div class="lu-name">${u.name}</div><div class="lu-role">${DB.roleLabels[u.role]}</div></div>
+      <div class="lu-check">${icon('check',14)}</div>
+    </div>`).join('');
+}
+function selectUser(id){
+  selectedUserId=id;
+  document.querySelectorAll('.login-user-row').forEach(r=>{
+    r.classList.toggle('selected',parseInt(r.getAttribute('onclick').match(/\d+/)[0])===id);
+  });
+}
+function doLogin(){
+  const u=DB.users.find(x=>x.id===selectedUserId);
+  if(!u)return;
+  DB.currentUser=u;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // update UI
+  document.getElementById('user-avatar-sidebar').textContent=u.initials;
+  document.getElementById('user-avatar-sidebar').style.background=u.color;
+  document.getElementById('user-name-sidebar').textContent=u.name;
+  document.getElementById('user-role-sidebar').textContent=DB.roleLabels[u.role];
+  document.getElementById('user-avatar-top').textContent=u.initials;
+  document.getElementById('user-avatar-top').style.background=u.color;
+  buildNav();
+  showPage('dashboard');
+  toast(`Welcome, ${u.name}!`,'success');
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function buildNav(){
+  const el=document.getElementById('nav-menu');
+  const role=DB.currentUser.role;
+  const allowed=PERMS[role]||[];
+  el.innerHTML=ALL_NAV.map(group=>{
+    const items=group.items.filter(i=>allowed.includes(i.id));
+    if(!items.length)return'';
+    return`<div class="nav-group">
+      <div class="nav-label">${group.group}</div>
+      ${items.map(i=>{
+        const bc=getBadgeCount(i.id);
+        return`<div class="nav-item" id="nav-${i.id}" onclick="showPage('${i.id}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[i.icon]||''}</svg>
+          ${i.label}
+          ${bc?`<span class="nav-badge">${bc}</span>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+function showPage(id){
+  if(!can(id)){toast('Access denied for your role','error');return;}
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg){pg.classList.add('active');renderPage(id,pg);}
+  const nav=document.getElementById('nav-'+id);
+  if(nav)nav.classList.add('active');
+  const titles={dashboard:'Dashboard',inventory:'Components',movements:'Stock Movements',workorders:'Work Orders',bom:'BOM Matching',itemcodes:'Item Codes',indents:'Indents & Issues',pr:'Purchase Requests',grn:'Goods Inward & QC',settings:'Settings'};
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+}
+
+// ══════════════════════════════════════════════
+// PAGE RENDERERS
+// ══════════════════════════════════════════════
+function renderPage(id,el){
+  const r={
+    dashboard:renderDashboard,
+    inventory:renderInventory,
+    movements:renderMovements,
+    workorders:renderWorkOrders,
+    bom:renderBOM,
+    itemcodes:renderItemCodes,
+    indents:renderIndents,
+    pr:renderPR,
+    grn:renderGRN,
+    settings:renderSettings,
+  };
+  if(r[id])r[id](el);
+}
+
+// ── DASHBOARD ──
+function renderDashboard(el){
+  const lowStock=DB.inventory.filter(i=>i.qty<=i.alert).length;
+  const pending=DB.workorders.filter(w=>w.status==='erp_review'||w.status==='cto_approval').length;
+  const pendingIC=DB.itemCodes.filter(i=>i.status==='pending').length;
+  const totalPending=pending+pendingIC+DB.purchaseRequests.filter(p=>p.status==='open').length;
+  const totalValue=DB.inventory.reduce((s,i)=>s+i.qty*150,0);
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Dashboard</h1><p>Overview of inventory, approvals, and project status</p></div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="renderPage('dashboard',document.getElementById('pg-dashboard'))">${icon('refresh-cw')} Refresh</button>
+    </div>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card accent">
+      <div class="m-label">TOTAL COMPONENTS</div>
+      <div class="m-value">${DB.inventory.length.toString().padStart(4,'0')}</div>
+      <div class="m-delta up">${icon('trending-up',11)} ${DB.inventory.reduce((s,i)=>s+i.qty,0).toLocaleString()} units total</div>
+    </div>
+    <div class="metric-card warn">
+      <div class="m-label">LOW STOCK ALERTS</div>
+      <div class="m-value" style="color:var(--warn)">${lowStock}</div>
+      <div class="m-delta" style="color:var(--warn)">${icon('alert-triangle',11)} Needs attention</div>
+    </div>
+    <div class="metric-card danger">
+      <div class="m-label">PENDING APPROVALS</div>
+      <div class="m-value" style="color:var(--danger)">${totalPending}</div>
+      <div class="m-delta down">${icon('alert-triangle',11)} ${pending} WO · ${pendingIC} IC · ${DB.purchaseRequests.filter(p=>p.status==='open').length} PR</div>
+    </div>
+    <div class="metric-card info">
+      <div class="m-label">ACTIVE PROJECTS</div>
+      <div class="m-value" style="color:var(--info)">${DB.workorders.filter(w=>w.status==='active').length}</div>
+      <div class="m-delta neutral">${DB.workorders.filter(w=>w.status==='complete').length} completed this quarter</div>
+    </div>
+  </div>
+
+  ${lowStock>0?`<div class="alert-banner alert-warn">${icon('alert-triangle')} <strong>${lowStock} components</strong> are below their low stock alert threshold — consider raising purchase requests.</div>`:''}
+
+  <div class="grid2">
+    <div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Pending Approvals</div><button class="btn btn-ghost btn-sm" onclick="showPage('workorders')">View WOs</button></div>
+        <div class="card-body">
+          ${[...DB.workorders.filter(w=>w.status==='erp_review'||w.status==='cto_approval').slice(0,3),
+             ...DB.itemCodes.filter(i=>i.status==='pending').slice(0,2),
+             ...DB.purchaseRequests.filter(p=>p.status==='open').slice(0,1)
+          ].map(item=>{
+            const isWO=item.id&&item.id.startsWith('WO');
+            const isIC=item.id&&item.id.startsWith('IC');
+            const color=isWO?'#7F77DD':isIC?'#f59e0b':'#1D9E75';
+            const sub=isWO?`${item.status==='erp_review'?'ERP review':'CTO approval'} pending · ${item.customer}`
+                     :isIC?`CTO item code review · ${item.mfr}`
+                     :`Awaiting quotation · Qty: ${item.qty}`;
+            return`<div class="approval-item">
+              <div class="appr-dot" style="background:${color}"></div>
+              <div class="appr-info">
+                <div class="appr-title">${item.id} — ${item.title||item.desc||item.component}</div>
+                <div class="appr-sub">${sub}</div>
+              </div>
+              <div class="appr-actions">
+                <button class="btn btn-ghost btn-sm" onclick="showPage('${isWO?'workorders':isIC?'itemcodes':'pr'}')">${icon('eye',11)} Review</button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Project Allocation</div></div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Project</th><th>Reserved</th><th>Issued</th><th>Status</th></tr></thead>
+              <tbody>
+                ${DB.workorders.filter(w=>w.status!=='rejected').slice(0,5).map(w=>{
+                  const [tc,tl]=woStatusTag(w.status);
+                  return`<tr>
+                    <td class="td-main">${w.title}</td>
+                    <td class="td-mono">${w.status==='active'?Math.floor(Math.random()*200+100):'—'}</td>
+                    <td class="td-mono">${w.status==='active'||w.status==='complete'?Math.floor(Math.random()*150+50):'—'}</td>
+                    <td><span class="tag ${tc}">${tl}</span></td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Stock by Category</div></div>
+        <div class="card-body">
+          ${[
+            {cat:'Microcontrollers',pct:82},
+            {cat:'Capacitors',pct:61},
+            {cat:'RF Modules',pct:12},
+            {cat:'Resistors',pct:28},
+            {cat:'Power ICs',pct:55},
+            {cat:'Connectors',pct:19},
+            {cat:'DSPs',pct:45},
+          ].map(c=>`
+            <div class="prog-wrap">
+              <div class="prog-label"><span>${c.cat}</span><span>${c.pct}%</span></div>
+              <div class="prog-track"><div class="prog-fill ${c.pct>40?'ok':c.pct>20?'warn':'low'}" style="width:${c.pct}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent Activity</div><button class="btn btn-ghost btn-sm" onclick="showPage('movements')">${icon('activity',11)} Full Log</button></div>
+        <div class="card-body">
+          <div class="activity-list">
+            ${DB.movements.slice(0,6).map(m=>{
+              const colors={issued:'var(--info)',received:'var(--accent)',reserved:'var(--purple)',adjusted:'var(--warn)',rejected:'var(--danger)'};
+              const bgc=colors[m.type]||'var(--text3)';
+              return`<div class="activity-item">
+                <div class="act-icon" style="background:${bgc}22;color:${bgc}">${icon(m.qty>0?'download':'send',12)}</div>
+                <div class="act-body">
+                  <div class="act-text"><strong>${m.type.toUpperCase()}</strong> ${Math.abs(m.qty)} × ${m.gpn} — ${m.ref}</div>
+                  <div class="act-meta">${m.date} · ${m.user}${m.project!=='—'?' · '+m.project:''}</div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── INVENTORY ──
+let invFilter={search:'',cat:'',type:''};
+function renderInventory(el){
+  const cats=[...new Set(DB.inventory.map(i=>i.cat))].sort();
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Components</h1><p>${DB.inventory.length} items · ${DB.inventory.reduce((s,i)=>s+i.qty,0).toLocaleString()} total units${DB.currentUser.role!=='erp_team'?' · <span style="color:var(--warn);font-size:11px">View only — ERP Team manages component master</span>':' · <span style="color:var(--accent);font-size:11px">ERP Team — full access</span>'}</p></div>
+    <div class="page-header-right">
+      ${DB.currentUser.role==='erp_team'?`<button class="btn btn-secondary" onclick="showImportModal()">${icon('upload')} Import CSV</button>`:''}
+      <button class="btn btn-ghost" onclick="exportInventory()">${icon('download')} Export</button>
+      ${DB.currentUser.role==='erp_team'?`<button class="btn btn-primary" onclick="showAddComponentModal()">${icon('plus')} Add Component</button>`:''}
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      ${icon('search')}
+      <input class="input-field input-search" type="text" placeholder="Search Galaxi PN, MPN, description..." value="${invFilter.search}" oninput="invFilter.search=this.value;renderInvTable()">
+    </div>
+    <select class="input-field" onchange="invFilter.cat=this.value;renderInvTable()">
+      <option value="">All Categories</option>
+      ${cats.map(c=>`<option${invFilter.cat===c?' selected':''}>${c}</option>`).join('')}
+    </select>
+    <select class="input-field" onchange="invFilter.type=this.value;renderInvTable()">
+      <option value="">All Types</option>
+      <option value="general"${invFilter.type==='general'?' selected':''}>General</option>
+      <option value="project"${invFilter.type==='project'?' selected':''}>Project Allocated</option>
+    </select>
+    <div class="toolbar-spacer"></div>
+    <span style="font-size:11px;color:var(--text3);font-family:var(--mono)" id="inv-count"></span>
+  </div>
+  <div class="card"><div class="table-wrap" id="inv-table-wrap"></div></div>`;
+  renderInvTable();
+}
+function renderInvTable(){
+  const f=invFilter;
+  let items=DB.inventory.filter(i=>{
+    const q=f.search.toLowerCase();
+    if(q&&!i.id.toLowerCase().includes(q)&&!i.desc.toLowerCase().includes(q)&&!i.mpn.toLowerCase().includes(q)&&!i.mfr.toLowerCase().includes(q))return false;
+    if(f.cat&&i.cat!==f.cat)return false;
+    if(f.type&&i.type!==f.type)return false;
+    return true;
+  });
+  const cnt=document.getElementById('inv-count');
+  if(cnt)cnt.textContent=`${items.length} of ${DB.inventory.length} items`;
+  const wrap=document.getElementById('inv-table-wrap');
+  if(!wrap)return;
+  if(!items.length){wrap.innerHTML=`<div class="empty-state">${icon('box',36)}<p>No components match your filters</p></div>`;return;}
+  wrap.innerHTML=`<table>
+    <thead><tr><th>Galaxi PN</th><th>Description</th><th>Manufacturer</th><th>MPN</th><th>Available</th><th>Reserved</th><th>Alert Limit</th><th>Location</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${items.map(i=>{
+      const avail=i.qty-i.reserved;
+      const s=stockStatus(i);
+      const availColor=avail<=0?'var(--danger)':i.qty<=i.alert?'var(--warn)':'var(--accent)';
+      return`<tr>
+        <td class="td-main td-mono">${i.id}</td>
+        <td class="td-main" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${i.desc}">${i.desc}</td>
+        <td>${i.mfr}</td>
+        <td class="td-mono" style="font-size:11px">${i.mpn}</td>
+        <td class="td-mono" style="color:${availColor};font-weight:600">${avail}</td>
+        <td class="td-mono">${i.reserved}</td>
+        <td class="td-mono" style="color:var(--text3)">${i.alert}</td>
+        <td style="font-size:11px">${i.location}</td>
+        <td><span class="tag ${i.type==='project'?'tag-blue':'tag-gray'}">${i.cat}</span></td>
+        <td><span class="tag ${s.tag}">${s.label}</span></td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" onclick="viewComponent('${i.id}')" title="View">${icon('eye',11)}</button>
+            ${DB.currentUser.role==='erp_team'?`<button class="btn btn-ghost btn-sm" onclick="editComponent('${i.id}')" title="Edit">${icon('edit',11)}</button>`:''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function viewComponent(id){
+  const i=DB.inventory.find(x=>x.id===id);
+  if(!i)return;
+  const avail=i.qty-i.reserved;
+  openModal(i.id+' — '+i.desc,`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">MANUFACTURER</div><div style="font-weight:500">${i.mfr}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">MPN</div><div style="font-family:var(--mono);font-size:12px">${i.mpn}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">TOTAL QTY</div><div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--accent)">${i.qty}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">AVAILABLE</div><div style="font-size:22px;font-weight:700;font-family:var(--mono);color:${avail<=0?'var(--danger)':'var(--accent)'}">${avail}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">RESERVED</div><div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--warn)">${i.reserved}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">ALERT LIMIT</div><div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text3)">${i.alert}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">LOCATION</div><div style="font-weight:500">${i.location}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:4px">CATEGORY</div><div><span class="tag tag-blue">${i.cat}</span></div></div>
+    </div>
+    <div style="background:var(--bg3);border-radius:var(--r);padding:12px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Recent Movements</div>
+      ${DB.movements.filter(m=>m.gpn===id).slice(0,4).map(m=>`
+        <div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+          <span class="tag ${m.qty>0?'tag-green':'tag-blue'}" style="min-width:70px;justify-content:center">${m.type}</span>
+          <span style="font-family:var(--mono)">${m.qty>0?'+':''}${m.qty}</span>
+          <span style="color:var(--text3)">${m.ref}</span>
+          <span style="color:var(--text3);margin-left:auto">${m.date}</span>
+        </div>
+      `).join('')||'<div style="color:var(--text3);font-size:12px">No movements recorded</div>'}
+    </div>
+  `);
+}
+function editComponent(id){
+  const i=DB.inventory.find(x=>x.id===id);
+  if(!i)return;
+  openModal('Edit Component — '+id,`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">DESCRIPTION</label><input class="form-control" id="ec-desc" value="${i.desc}"></div>
+      <div class="form-group"><label class="form-label">MANUFACTURER</label><input class="form-control" id="ec-mfr" value="${i.mfr}"></div>
+      <div class="form-group"><label class="form-label">TOTAL QTY</label><input class="form-control" id="ec-qty" type="number" value="${i.qty}"></div>
+      <div class="form-group"><label class="form-label">ALERT LIMIT</label><input class="form-control" id="ec-alert" type="number" value="${i.alert}"></div>
+      <div class="form-group"><label class="form-label">LOCATION</label><input class="form-control" id="ec-loc" value="${i.location}"></div>
+      <div class="form-group"><label class="form-label">CATEGORY</label><input class="form-control" id="ec-cat" value="${i.cat}"></div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveComponent('${id}')">Save Changes</button>`);
+}
+function saveComponent(id){
+  if(DB.currentUser.role!=='erp_team'){toast('Only ERP Team can edit components','error');closeModal();return;}
+  const i=DB.inventory.find(x=>x.id===id);
+  if(!i)return;
+  i.desc=document.getElementById('ec-desc').value;
+  i.mfr=document.getElementById('ec-mfr').value;
+  i.qty=parseInt(document.getElementById('ec-qty').value)||i.qty;
+  i.alert=parseInt(document.getElementById('ec-alert').value)||i.alert;
+  i.location=document.getElementById('ec-loc').value;
+  i.cat=document.getElementById('ec-cat').value;
+  DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:id,desc:i.desc,type:'adjusted',qty:0,ref:'EDIT-'+Date.now(),project:'—',user:DB.currentUser.name.split(' ')[0]});
+  closeModal();
+  toast('Component updated successfully');
+  renderInventory(document.getElementById('pg-inventory'));
+}
+function showAddComponentModal(){
+  openModal('Add New Component',`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">GALAXI PN (leave blank to auto-generate)</label><input class="form-control" id="nc-id" placeholder="GX-XXX-000"></div>
+      <div class="form-group"><label class="form-label">CATEGORY</label>
+        <select class="form-control" id="nc-cat">
+          <option>Microcontrollers</option><option>Capacitors</option><option>Resistors</option>
+          <option>RF Modules</option><option>Power ICs</option><option>Connectors</option>
+          <option>DSPs</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group span2"><label class="form-label">DESCRIPTION</label><input class="form-control" id="nc-desc" placeholder="Full part description"></div>
+      <div class="form-group"><label class="form-label">MANUFACTURER</label><input class="form-control" id="nc-mfr" placeholder="e.g. Texas Instruments"></div>
+      <div class="form-group"><label class="form-label">MPN</label><input class="form-control" id="nc-mpn" placeholder="Manufacturer Part Number"></div>
+      <div class="form-group"><label class="form-label">INITIAL QTY</label><input class="form-control" id="nc-qty" type="number" placeholder="0" value="0"></div>
+      <div class="form-group"><label class="form-label">ALERT LIMIT</label><input class="form-control" id="nc-alert" type="number" placeholder="10" value="10"></div>
+      <div class="form-group"><label class="form-label">STORAGE LOCATION</label><input class="form-control" id="nc-loc" placeholder="Rack A1-B2"></div>
+      <div class="form-group"><label class="form-label">TYPE</label>
+        <select class="form-control" id="nc-type"><option value="general">General</option><option value="project">Project Allocated</option></select>
+      </div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="addComponent()">Add Component</button>`);
+}
+function addComponent(){
+  if(DB.currentUser.role!=='erp_team'){toast('Only ERP Team can add components','error');closeModal();return;}
+  const desc=document.getElementById('nc-desc').value.trim();
+  const mfr=document.getElementById('nc-mfr').value.trim();
+  const mpn=document.getElementById('nc-mpn').value.trim();
+  if(!desc||!mfr||!mpn){toast('Please fill description, manufacturer and MPN','error');return;}
+  const cat=document.getElementById('nc-cat').value;
+  const prefix=cat.slice(0,3).toUpperCase();
+  const id=document.getElementById('nc-id').value.trim()||`GX-${prefix}-${String(DB.inventory.length+1).padStart(3,'0')}`;
+  if(DB.inventory.find(i=>i.id===id)){toast('Part number already exists','error');return;}
+  const qty=parseInt(document.getElementById('nc-qty').value)||0;
+  DB.inventory.push({id,desc,mfr,mpn,qty,reserved:0,alert:parseInt(document.getElementById('nc-alert').value)||10,location:document.getElementById('nc-loc').value||'—',cat,type:document.getElementById('nc-type').value});
+  if(qty>0)DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:id,desc,type:'received',qty,ref:'INIT-'+Date.now(),project:'—',user:DB.currentUser.name.split(' ')[0]});
+  closeModal();
+  toast('Component added: '+id);
+  renderInventory(document.getElementById('pg-inventory'));
+}
+function showImportModal(){
+  openModal('Import Components from CSV',`
+    <div class="alert-banner alert-info">${icon('info')} Expected CSV columns: <code style="font-family:var(--mono);font-size:11px">id,desc,mfr,mpn,qty,alert,location,cat,type</code></div>
+    <div style="border:2px dashed var(--border2);border-radius:var(--r);padding:32px;text-align:center;color:var(--text3);margin-bottom:16px;cursor:pointer" onclick="toast('File picker would open here — connect to real backend','info')">
+      ${icon('upload',24)}<br><br>
+      <span style="font-size:13px">Drop CSV/Excel file here or click to browse</span><br>
+      <span style="font-size:11px;margin-top:8px;display:block">Supports .csv and .xlsx</span>
+    </div>
+    <button class="btn btn-ghost" style="width:100%" onclick="toast('Downloading template CSV...','info')">${icon('download')} Download Template</button>
+  `);
+}
+function exportInventory(){
+  const header='Galaxi PN,Description,Manufacturer,MPN,Qty,Reserved,Available,Alert Limit,Location,Category,Type\n';
+  const rows=DB.inventory.map(i=>`${i.id},"${i.desc}",${i.mfr},${i.mpn},${i.qty},${i.reserved},${i.qty-i.reserved},${i.alert},${i.location},${i.cat},${i.type}`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='galaxi_inventory.csv';a.click();
+  toast('Inventory exported to CSV');
+}
+
+// ── MOVEMENTS ──
+let movFilter={search:'',type:''};
+function renderMovements(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Stock Movements</h1><p>Complete audit trail of all stock transactions</p></div>
+    <div class="page-header-right">
+      <button class="btn btn-ghost" onclick="exportMovements()">${icon('download')} Export Log</button>
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">${icon('search')}<input class="input-field input-search" type="text" placeholder="Search component, reference..." oninput="movFilter.search=this.value;renderMovTable()"></div>
+    <select class="input-field" onchange="movFilter.type=this.value;renderMovTable()">
+      <option value="">All Types</option>
+      <option value="issued">Issued</option><option value="received">Received</option>
+      <option value="reserved">Reserved</option><option value="adjusted">Adjusted</option><option value="rejected">Rejected</option>
+    </select>
+    <div class="toolbar-spacer"></div>
+    <span id="mov-count" style="font-size:11px;color:var(--text3);font-family:var(--mono)"></span>
+  </div>
+  <div class="card"><div class="table-wrap" id="mov-table-wrap"></div></div>`;
+  renderMovTable();
+}
+function renderMovTable(){
+  const f=movFilter;
+  let items=DB.movements.filter(m=>{
+    const q=f.search.toLowerCase();
+    if(q&&!m.gpn.toLowerCase().includes(q)&&!m.ref.toLowerCase().includes(q)&&!m.desc.toLowerCase().includes(q))return false;
+    if(f.type&&m.type!==f.type)return false;
+    return true;
+  });
+  const cnt=document.getElementById('mov-count');
+  if(cnt)cnt.textContent=`${items.length} transactions`;
+  const wrap=document.getElementById('mov-table-wrap');
+  if(!wrap)return;
+  const typeTag={issued:'tag-blue',received:'tag-green',reserved:'tag-purple',adjusted:'tag-yellow',rejected:'tag-red'};
+  wrap.innerHTML=`<table>
+    <thead><tr><th>Date & Time</th><th>Galaxi PN</th><th>Description</th><th>Type</th><th>Qty Change</th><th>Reference</th><th>Project</th><th>User</th></tr></thead>
+    <tbody>${items.map(m=>`<tr>
+      <td class="td-mono" style="font-size:11px;white-space:nowrap">${m.date}</td>
+      <td class="td-main td-mono">${m.gpn}</td>
+      <td>${m.desc}</td>
+      <td><span class="tag ${typeTag[m.type]||'tag-gray'}">${m.type}</span></td>
+      <td class="td-mono" style="color:${m.qty>0?'var(--accent)':'var(--danger)'};font-weight:600">${m.qty>0?'+':''}${m.qty}</td>
+      <td class="td-mono" style="font-size:11px">${m.ref}</td>
+      <td style="color:var(--text3)">${m.project}</td>
+      <td>${m.user}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+function exportMovements(){
+  const header='Date,Galaxi PN,Description,Type,Qty,Reference,Project,User\n';
+  const rows=DB.movements.map(m=>`${m.date},${m.gpn},"${m.desc}",${m.type},${m.qty},${m.ref},${m.project},${m.user}`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='stock_movements.csv';a.click();
+  toast('Movement log exported');
+}
+
+// ── WORK ORDERS ──
+function renderWorkOrders(el){
+  const role=DB.currentUser.role;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Work Orders</h1><p>Manage project work order lifecycle from submission to completion</p></div>
+    <div class="page-header-right">
+      ${role==='project_coordinator'?`<button class="btn btn-primary" onclick="showNewWOModal()">${icon('plus')} New Work Order</button>`:''}
+    </div>
+  </div>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="step-box done"><span class="step-num">1</span> Coordinator Submits</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box active"><span class="step-num">2</span> ERP Reviews</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box"><span class="step-num">3</span> CTO Approves</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box"><span class="step-num">4</span> BOM Upload</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box"><span class="step-num">5</span> Active</div></div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">${icon('search')}<input class="input-field input-search" type="text" id="wo-search" placeholder="Search work orders..." oninput="renderWOTable()"></div>
+    <select class="input-field" id="wo-status" onchange="renderWOTable()">
+      <option value="">All Status</option>
+      <option value="erp_review">Pending ERP</option><option value="cto_approval">Pending CTO</option>
+      <option value="active">Active</option><option value="complete">Complete</option><option value="rejected">Rejected</option>
+    </select>
+  </div>
+  <div class="card"><div class="table-wrap" id="wo-table-wrap"></div></div>`;
+  renderWOTable();
+}
+function renderWOTable(){
+  const q=(document.getElementById('wo-search')?.value||'').toLowerCase();
+  const sf=document.getElementById('wo-status')?.value||'';
+  let items=DB.workorders.filter(w=>{
+    if(q&&!w.id.toLowerCase().includes(q)&&!w.title.toLowerCase().includes(q)&&!w.customer.toLowerCase().includes(q))return false;
+    if(sf&&w.status!==sf)return false;
+    return true;
+  });
+  const wrap=document.getElementById('wo-table-wrap');
+  if(!wrap)return;
+  const role=DB.currentUser.role;
+  wrap.innerHTML=`<table>
+    <thead><tr><th>WO Number</th><th>Project Title</th><th>Customer</th><th>Duration</th><th>Submitted by</th><th>ERP</th><th>CTO</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${items.map(w=>{
+      const [tc,tl]=woStatusTag(w.status);
+      const erpTag=w.erpStatus==='approved'?'tag-green':w.erpStatus==='rejected'?'tag-red':'tag-yellow';
+      const ctoTag=w.ctoStatus==='approved'?'tag-green':w.ctoStatus==='rejected'?'tag-red':'tag-gray';
+      return`<tr>
+        <td class="td-main td-mono">${w.id}</td>
+        <td class="td-main">${w.title}</td>
+        <td>${w.customer}</td>
+        <td style="color:var(--text3)">${w.duration}</td>
+        <td>${w.by}</td>
+        <td><span class="tag ${erpTag}">${w.erpStatus}</span></td>
+        <td><span class="tag ${ctoTag}">${w.ctoStatus}</span></td>
+        <td><span class="tag ${tc}">${tl}</span></td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" onclick="viewWO('${w.id}')">${icon('eye',11)}</button>
+            ${role==='erp_team'&&w.status==='erp_review'?`<button class="btn btn-primary btn-sm" onclick="approveWO('${w.id}','erp')">${icon('check',11)} Approve</button><button class="btn btn-danger btn-sm" onclick="rejectWO('${w.id}','erp')">${icon('x',11)}</button>`:''}
+            ${role==='cto'&&w.status==='cto_approval'?`<button class="btn btn-primary btn-sm" onclick="approveWO('${w.id}','cto')">${icon('check',11)} Approve</button><button class="btn btn-danger btn-sm" onclick="rejectWO('${w.id}','cto')">${icon('x',11)}</button>`:''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function viewWO(id){
+  const w=DB.workorders.find(x=>x.id===id);if(!w)return;
+  const [tc,tl]=woStatusTag(w.status);
+  openModal(w.id+' — '+w.title,`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div class="form-label" style="margin-bottom:4px">CUSTOMER</div><div style="font-weight:500">${w.customer}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">DURATION</div><div style="font-weight:500">${w.duration}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">SUBMITTED BY</div><div style="font-weight:500">${w.by}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">STATUS</div><span class="tag ${tc}">${tl}</span></div>
+      <div><div class="form-label" style="margin-bottom:4px">ERP APPROVAL</div><span class="tag ${w.erpStatus==='approved'?'tag-green':w.erpStatus==='rejected'?'tag-red':'tag-yellow'}">${w.erpStatus}</span></div>
+      <div><div class="form-label" style="margin-bottom:4px">CTO APPROVAL</div><span class="tag ${w.ctoStatus==='approved'?'tag-green':w.ctoStatus==='rejected'?'tag-red':'tag-gray'}">${w.ctoStatus}</span></div>
+    </div>
+    <div class="form-group"><div class="form-label" style="margin-bottom:4px">DESCRIPTION</div><div style="font-size:13px;color:var(--text2);line-height:1.6;background:var(--bg3);padding:10px;border-radius:var(--r)">${w.desc}</div></div>
+    ${w.bom.length?`<div style="margin-top:16px"><div class="form-label" style="margin-bottom:8px">BOM COMPONENTS</div>${w.bom.map(g=>{const inv=DB.inventory.find(i=>i.id===g);return inv?`<div class="bom-item"><span class="tag tag-blue td-mono">${g}</span><span style="flex:1;font-size:12px">${inv.desc}</span><span style="color:${inv.qty-inv.reserved>0?'var(--accent)':'var(--danger)'};font-family:var(--mono);font-size:12px">${inv.qty-inv.reserved} avail</span></div>`:'';}).join('')}</div>`:'<div style="color:var(--text3);font-size:12px;margin-top:12px">No BOM uploaded yet.</div>'}
+  `);
+}
+function approveWO(id,by){
+  const w=DB.workorders.find(x=>x.id===id);if(!w)return;
+  if(by==='erp'){w.erpStatus='approved';if(w.ctoStatus!=='rejected')w.status='cto_approval';}
+  else if(by==='cto'){w.ctoStatus='approved';w.status='active';}
+  toast(`WO ${id} approved by ${by.toUpperCase()}`);
+  buildNav();
+  renderWorkOrders(document.getElementById('pg-workorders'));
+}
+function rejectWO(id,by){
+  const w=DB.workorders.find(x=>x.id===id);if(!w)return;
+  if(by==='erp')w.erpStatus='rejected';
+  else w.ctoStatus='rejected';
+  w.status='rejected';
+  toast(`WO ${id} rejected`,'error');
+  buildNav();
+  renderWorkOrders(document.getElementById('pg-workorders'));
+}
+function showNewWOModal(){
+  openModal('New Work Order Request',`
+    <div class="form-grid">
+      <div class="form-group span2"><label class="form-label">PROJECT TITLE</label><input class="form-control" id="nw-title" placeholder="e.g. Radar Module v4"></div>
+      <div class="form-group"><label class="form-label">CUSTOMER</label><input class="form-control" id="nw-customer" placeholder="e.g. DRDO, HAL, ISRO"></div>
+      <div class="form-group"><label class="form-label">DURATION</label><input class="form-control" id="nw-duration" placeholder="e.g. 90 days"></div>
+      <div class="form-group span2"><label class="form-label">DESCRIPTION</label><textarea class="form-control" id="nw-desc" placeholder="Brief description of project requirements"></textarea></div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="submitWO()">Submit for ERP Review</button>`);
+}
+function submitWO(){
+  const title=document.getElementById('nw-title').value.trim();
+  const customer=document.getElementById('nw-customer').value.trim();
+  const duration=document.getElementById('nw-duration').value.trim();
+  const desc=document.getElementById('nw-desc').value.trim();
+  if(!title||!customer){toast('Title and customer are required','error');return;}
+  const id='WO-'+new Date().getFullYear()+'-'+String(DB.workorders.length+32).padStart(3,'0');
+  DB.workorders.unshift({id,title,customer,duration:duration||'TBD',desc,by:DB.currentUser.name,byId:DB.currentUser.id,erpStatus:'pending',ctoStatus:'pending',status:'erp_review',createdAt:new Date().toISOString().slice(0,10),bom:[]});
+  closeModal();
+  toast('Work Order '+id+' submitted for ERP review');
+  buildNav();
+  renderWorkOrders(document.getElementById('pg-workorders'));
+}
+
+// ── BOM MATCHING ──
+function renderBOM(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>BOM Matching</h1><p>Match bill of materials against live inventory</p></div>
+  </div>
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Upload BOM</div></div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">WORK ORDER</label>
+          <select class="form-control" id="bom-wo">
+            ${DB.workorders.filter(w=>w.status==='active'||w.status==='cto_approval').map(w=>`<option value="${w.id}">${w.id} — ${w.title}</option>`).join('')}
+          </select>
+        </div>
+        <div style="border:2px dashed var(--border2);border-radius:var(--r);padding:24px;text-align:center;color:var(--text3);margin-bottom:12px;cursor:pointer" onclick="toast('File picker — connect to real backend for Excel parsing','info')">
+          ${icon('upload',20)}<br><br>
+          <span style="font-size:13px">Drop Excel/CSV BOM here or click to browse</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:16px">Or select components manually below</div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label class="form-label">QUICK SEARCH & ADD</label>
+          <div style="display:flex;gap:8px">
+            <input class="form-control" style="flex:1" id="bom-search-input" placeholder="Search Galaxi PN or description..." list="bom-datalist">
+            <datalist id="bom-datalist">${DB.inventory.map(i=>`<option value="${i.id}">${i.desc}</option>`).join('')}</datalist>
+            <button class="btn btn-primary" onclick="addBomItem()">${icon('plus')}</button>
+          </div>
+        </div>
+        <div id="bom-selected-list" style="max-height:160px;overflow-y:auto"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px;justify-content:center" onclick="runBomMatch()">
+          ${icon('layers')} Run BOM Match
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Match Summary</div></div>
+      <div class="card-body" id="bom-summary">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="color:var(--accent)">${icon('check',13)} Available in stock</span><span id="bom-cnt-ok" class="td-mono" style="font-size:16px;font-weight:700">—</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="color:var(--warn)">${icon('alert-triangle',13)} Available but reserved</span><span id="bom-cnt-warn" class="td-mono" style="font-size:16px;font-weight:700">—</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="color:var(--danger)">${icon('x',13)} Not available</span><span id="bom-cnt-bad" class="td-mono" style="font-size:16px;font-weight:700">—</span></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px" id="bom-actions" style="display:none">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="bom-results-card" style="display:none">
+    <div class="card-header"><div class="card-title" id="bom-results-title">Match Results</div></div>
+    <div class="card-body" id="bom-results-body"></div>
+  </div>`;
+  window._bomItems=[];
+}
+function addBomItem(){
+  const input=document.getElementById('bom-search-input');
+  const val=input.value.trim();
+  if(!val)return;
+  const inv=DB.inventory.find(i=>i.id===val||i.desc.toLowerCase().includes(val.toLowerCase()));
+  if(!inv){toast('Component not found in inventory','error');return;}
+  if(window._bomItems.find(x=>x.id===inv.id)){toast('Already added','warn');return;}
+  const qty=prompt(`How many ${inv.id} do you need?`,'1');
+  if(!qty)return;
+  window._bomItems.push({id:inv.id,need:parseInt(qty)||1});
+  input.value='';
+  renderBomSelectedList();
+}
+function renderBomSelectedList(){
+  const el=document.getElementById('bom-selected-list');
+  if(!el)return;
+  el.innerHTML=window._bomItems.map((b,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span class="td-mono" style="color:var(--info)">${b.id}</span>
+      <span style="flex:1;color:var(--text3)">${DB.inventory.find(x=>x.id===b.id)?.desc||''}</span>
+      <span style="color:var(--text3)">Qty: <strong style="color:var(--text)">${b.need}</strong></span>
+      <button class="btn btn-ghost btn-sm" onclick="window._bomItems.splice(${i},1);renderBomSelectedList()">${icon('x',10)}</button>
+    </div>`).join('');
+}
+function runBomMatch(){
+  const woId=document.getElementById('bom-wo')?.value;
+  if(!window._bomItems.length){toast('Add at least one component to match','warn');return;}
+  let ok=0,warn=0,bad=0;
+  const results=window._bomItems.map(b=>{
+    const inv=DB.inventory.find(i=>i.id===b.id);
+    if(!inv)return{...b,status:'bad',avail:0,total:0};
+    const avail=inv.qty-inv.reserved;
+    if(avail>=b.need){ok++;return{...b,status:'ok',avail,total:inv.qty,desc:inv.desc};}
+    if(inv.qty>=b.need){warn++;return{...b,status:'warn',avail,total:inv.qty,desc:inv.desc};}
+    bad++;return{...b,status:'bad',avail,total:inv.qty,desc:inv.desc};
+  });
+  document.getElementById('bom-cnt-ok').textContent=ok;
+  document.getElementById('bom-cnt-warn').textContent=warn;
+  document.getElementById('bom-cnt-bad').textContent=bad;
+  const actionsEl=document.getElementById('bom-actions');
+  if(actionsEl){
+    actionsEl.style.display='flex';
+    actionsEl.innerHTML=`
+      ${bad>0?`<button class="btn btn-warn" onclick="showPage('pr')">${icon('shopping-cart')} Raise PR for ${bad} missing items</button>`:''}
+      ${bad>0?`<button class="btn btn-ghost" onclick="showPage('itemcodes')">${icon('tag')} Request item codes for unknowns</button>`:''}
+      ${(ok+warn)>0?`<button class="btn btn-ghost" onclick="toast('Stock reserved for '+document.getElementById('bom-wo').value,'success')">${icon('check')} Reserve available stock</button>`:''}
+    `;
+  }
+  const card=document.getElementById('bom-results-card');
+  const body=document.getElementById('bom-results-body');
+  const title=document.getElementById('bom-results-title');
+  if(card&&body&&title){
+    card.style.display='block';
+    title.textContent=`Match Results — ${woId||'Manual BOM'}`;
+    body.innerHTML=results.map(r=>{
+      const cls=r.status==='ok'?'bom-ok':r.status==='warn'?'bom-warn':'bom-bad';
+      const ic=r.status==='ok'?'✓':r.status==='warn'?'⚠':'✕';
+      const stag=r.status==='ok'?'tag-green':r.status==='warn'?'tag-yellow':'tag-red';
+      const slabel=r.status==='ok'?'In Stock':r.status==='warn'?'Partially Reserved':'Not Available';
+      return`<div class="bom-item">
+        <div class="bom-status-icon ${cls}">${ic}</div>
+        <div class="bom-name"><div class="bom-part">${r.desc||r.id}</div><div class="bom-code">${r.id}</div></div>
+        <div class="bom-qty">Need ${r.need} · Have ${r.avail} free</div>
+        <span class="tag ${stag}">${slabel}</span>
+        ${r.status==='bad'?`<button class="btn btn-ghost btn-sm" onclick="showPage('pr')">${icon('shopping-cart',11)} Raise PR</button>`:''}
+      </div>`;
+    }).join('');
+  }
+  toast(`BOM matched: ${ok} available, ${warn} partial, ${bad} missing`);
+}
+
+// ── ITEM CODES ──
+function renderItemCodes(el){
+  const role=DB.currentUser.role;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Item Code Requests</h1><p>Control new component creation to prevent duplicates</p></div>
+    <div class="page-header-right">
+      ${role==='project_coordinator'||role==='engineer'?`<button class="btn btn-primary" onclick="showNewICModal()">${icon('plus')} Request Item Code</button>`:''}
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">${icon('search')}<input class="input-field input-search" id="ic-search" type="text" placeholder="Search requests..." oninput="renderICTable()"></div>
+    <select class="input-field" id="ic-status" onchange="renderICTable()">
+      <option value="">All Status</option>
+      <option value="pending">Pending CTO</option><option value="approved">Approved</option>
+      <option value="alternate">Alt. Suggested</option><option value="rejected">Rejected</option>
+    </select>
+  </div>
+  <div class="card"><div class="table-wrap" id="ic-table-wrap"></div></div>`;
+  renderICTable();
+}
+function renderICTable(){
+  const q=(document.getElementById('ic-search')?.value||'').toLowerCase();
+  const sf=document.getElementById('ic-status')?.value||'';
+  let items=DB.itemCodes.filter(i=>{
+    if(q&&!i.id.toLowerCase().includes(q)&&!i.mpn.toLowerCase().includes(q)&&!i.desc.toLowerCase().includes(q)&&!i.mfr.toLowerCase().includes(q))return false;
+    if(sf&&i.status!==sf)return false;
+    return true;
+  });
+  const wrap=document.getElementById('ic-table-wrap');
+  if(!wrap)return;
+  const role=DB.currentUser.role;
+  wrap.innerHTML=`<table>
+    <thead><tr><th>Request ID</th><th>Manufacturer</th><th>MPN</th><th>Description</th><th>Requested by</th><th>CTO Note</th><th>Assigned GPN</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${items.map(i=>{
+      const [tc,tl]=icStatusTag(i.status);
+      return`<tr>
+        <td class="td-main td-mono">${i.id}</td>
+        <td>${i.mfr}</td>
+        <td class="td-mono" style="font-size:11px">${i.mpn}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${i.desc}">${i.desc}</td>
+        <td>${i.by}</td>
+        <td style="font-size:11px;color:var(--text3);max-width:160px">${i.ctoNote||'—'}</td>
+        <td class="td-mono">${i.assignedGPN||'—'}</td>
+        <td><span class="tag ${tc}">${tl}</span></td>
+        <td>
+          <div style="display:flex;gap:4px">
+            ${role==='cto'&&i.status==='pending'?`
+              <button class="btn btn-primary btn-sm" onclick="approveIC('${i.id}')">${icon('check',11)} Approve</button>
+              <button class="btn btn-ghost btn-sm" onclick="suggestAltIC('${i.id}')">${icon('refresh-cw',11)}</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectIC('${i.id}')">${icon('x',11)}</button>
+            `:`<button class="btn btn-ghost btn-sm" onclick="viewIC('${i.id}')">${icon('eye',11)}</button>`}
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function approveIC(id){
+  const ic=DB.itemCodes.find(x=>x.id===id);if(!ic)return;
+  const cat=ic.desc.includes('FPGA')||ic.desc.includes('MCU')||ic.desc.includes('DSP')?'MCU':'IC';
+  const gpn='GX-'+cat+'-'+String(DB.inventory.length+1).padStart(3,'0');
+  ic.status='approved';ic.assignedGPN=gpn;
+  DB.inventory.push({id:gpn,desc:ic.desc,mfr:ic.mfr,mpn:ic.mpn,qty:0,reserved:0,alert:2,location:'TBD',cat:'Microcontrollers',type:'project'});
+  toast('Item code approved: '+gpn+' added to inventory');
+  buildNav();
+  renderItemCodes(document.getElementById('pg-itemcodes'));
+}
+function suggestAltIC(id){
+  const ic=DB.itemCodes.find(x=>x.id===id);if(!ic)return;
+  const note=prompt('Suggest an alternate Galaxi PN for '+ic.id+':','GX-MCU-009');
+  if(!note)return;
+  ic.status='alternate';ic.ctoNote='Consider using '+note+' instead';
+  toast('Alternate suggested for '+id,'info');
+  renderItemCodes(document.getElementById('pg-itemcodes'));
+}
+function rejectIC(id){
+  const ic=DB.itemCodes.find(x=>x.id===id);if(!ic)return;
+  ic.status='rejected';
+  toast('Item code request rejected','error');
+  renderItemCodes(document.getElementById('pg-itemcodes'));
+}
+function viewIC(id){
+  const ic=DB.itemCodes.find(x=>x.id===id);if(!ic)return;
+  const [tc,tl]=icStatusTag(ic.status);
+  openModal(ic.id+' — Item Code Request',`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><div class="form-label" style="margin-bottom:4px">MANUFACTURER</div><div style="font-weight:500">${ic.mfr}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">MPN</div><div style="font-family:var(--mono);font-size:12px">${ic.mpn}</div></div>
+      <div class="span2" style="grid-column:span 2"><div class="form-label" style="margin-bottom:4px">DESCRIPTION</div><div style="font-weight:500">${ic.desc}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">REQUESTED BY</div><div>${ic.by}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">STATUS</div><span class="tag ${tc}">${tl}</span></div>
+      <div class="span2" style="grid-column:span 2"><div class="form-label" style="margin-bottom:4px">CTO NOTE</div><div style="background:var(--bg3);padding:10px;border-radius:var(--r);font-size:12px;color:var(--text2)">${ic.ctoNote||'No note yet'}</div></div>
+      ${ic.assignedGPN?`<div><div class="form-label" style="margin-bottom:4px">ASSIGNED GALAXI PN</div><div class="td-mono" style="color:var(--accent);font-size:14px">${ic.assignedGPN}</div></div>`:''}
+    </div>
+  `);
+}
+function showNewICModal(){
+  openModal('Request New Item Code',`
+    <div class="alert-banner alert-info">${icon('info')} CTO will review and either approve a new Galaxi PN or suggest an existing component. Do not include quantity or location.</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">MANUFACTURER</label><input class="form-control" id="nic-mfr" placeholder="e.g. Xilinx"></div>
+      <div class="form-group"><label class="form-label">MPN</label><input class="form-control" id="nic-mpn" placeholder="Exact manufacturer part number"></div>
+      <div class="form-group span2"><label class="form-label">DESCRIPTION</label><input class="form-control" id="nic-desc" placeholder="Full component description"></div>
+      <div class="form-group span2"><label class="form-label">REASON FOR REQUEST</label><textarea class="form-control" id="nic-reason" placeholder="Why is this component needed? What project?"></textarea></div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="submitIC()">Submit to CTO</button>`);
+}
+function submitIC(){
+  const mfr=document.getElementById('nic-mfr').value.trim();
+  const mpn=document.getElementById('nic-mpn').value.trim();
+  const desc=document.getElementById('nic-desc').value.trim();
+  if(!mfr||!mpn||!desc){toast('All fields are required','error');return;}
+  const id='IC-'+String(DB.itemCodes.length+90).padStart(3,'0');
+  DB.itemCodes.unshift({id,mfr,mpn,desc,by:DB.currentUser.name,byId:DB.currentUser.id,ctoNote:'',status:'pending',createdAt:new Date().toISOString().slice(0,10),assignedGPN:null});
+  closeModal();
+  toast('Item code request '+id+' submitted to CTO');
+  buildNav();
+  renderItemCodes(document.getElementById('pg-itemcodes'));
+}
+
+// ── INDENTS ──
+function renderIndents(el){
+  const role=DB.currentUser.role;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Indents & Material Issues</h1><p>Request and track material issuance from store</p></div>
+    <div class="page-header-right">
+      ${role!=='store_manager'?`<button class="btn btn-primary" onclick="showNewIndentModal()">${icon('plus')} Raise Indent</button>`:''}
+    </div>
+  </div>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="step-box done"><span class="step-num">1</span> User Raises Indent</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box active"><span class="step-num">2</span> Store Reviews</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box"><span class="step-num">3</span> Stock Deducted</div></div>
+    <div class="step-arrow">→</div>
+    <div class="flow-step"><div class="step-box"><span class="step-num">4</span> Issued</div></div>
+  </div>
+  <div class="card"><div class="table-wrap">
+    <table>
+      <thead><tr><th>Indent ID</th><th>Type</th><th>Galaxi PN</th><th>Description</th><th>Qty</th><th>Project</th><th>WO Ref</th><th>Raised by</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>${DB.indents.map(ind=>{
+        const stag=ind.status==='issued'?'tag-green':'tag-yellow';
+        const isManager=role==='store_manager';
+        return`<tr>
+          <td class="td-main td-mono">${ind.id}</td>
+          <td><span class="tag ${ind.type==='assembly'?'tag-blue':'tag-purple'}">${ind.type}</span></td>
+          <td class="td-mono">${ind.gpn}</td>
+          <td>${ind.desc}</td>
+          <td class="td-mono">${ind.qty}</td>
+          <td>${ind.project}</td>
+          <td class="td-mono" style="font-size:11px">${ind.woRef}</td>
+          <td>${ind.by}</td>
+          <td><span class="tag ${stag}">${ind.status}</span></td>
+          <td>${isManager&&ind.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="issueIndent('${ind.id}')">${icon('check',11)} Issue</button>`:''}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div></div>`;
+}
+function issueIndent(id){
+  const ind=DB.indents.find(x=>x.id===id);if(!ind)return;
+  const inv=DB.inventory.find(i=>i.id===ind.gpn);
+  if(inv){
+    if(inv.qty-inv.reserved<ind.qty){toast('Insufficient available stock','error');return;}
+    inv.qty-=ind.qty;
+  }
+  ind.status='issued';
+  DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:ind.gpn,desc:ind.desc,type:'issued',qty:-ind.qty,ref:ind.id,project:ind.project,user:DB.currentUser.name.split(' ')[0]});
+  toast('Indent '+id+' issued — stock deducted');
+  renderIndents(document.getElementById('pg-indents'));
+}
+function showNewIndentModal(){
+  openModal('Raise Indent',`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">TYPE</label>
+        <select class="form-control" id="ni-type"><option value="assembly">Assembly</option><option value="testing">Testing</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">WORK ORDER</label>
+        <select class="form-control" id="ni-wo">
+          ${DB.workorders.filter(w=>w.status==='active').map(w=>`<option value="${w.id}">${w.id} — ${w.title}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">GALAXI PN</label>
+        <input class="form-control" id="ni-gpn" placeholder="GX-MCU-001" list="indent-datalist">
+        <datalist id="indent-datalist">${DB.inventory.map(i=>`<option value="${i.id}">${i.desc}</option>`).join('')}</datalist>
+      </div>
+      <div class="form-group"><label class="form-label">QUANTITY NEEDED</label><input class="form-control" id="ni-qty" type="number" min="1" value="1"></div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="submitIndent()">Submit Indent</button>`);
+}
+function submitIndent(){
+  const gpn=document.getElementById('ni-gpn').value.trim();
+  const qty=parseInt(document.getElementById('ni-qty').value)||0;
+  const wo=document.getElementById('ni-wo').value;
+  const type=document.getElementById('ni-type').value;
+  if(!gpn||qty<1){toast('Fill in all fields','error');return;}
+  const inv=DB.inventory.find(i=>i.id===gpn);
+  if(!inv){toast('Component not found','error');return;}
+  const wobj=DB.workorders.find(w=>w.id===wo);
+  const id='ISS-'+String(DB.indents.length+215).padStart(3,'0');
+  DB.indents.unshift({id,type,gpn,desc:inv.desc,qty,project:wobj?.title||'General',woRef:wo,by:DB.currentUser.name,byId:DB.currentUser.id,status:'pending',createdAt:new Date().toISOString().slice(0,10)});
+  closeModal();
+  toast('Indent '+id+' submitted to store');
+  renderIndents(document.getElementById('pg-indents'));
+}
+
+// ── PURCHASE REQUESTS ──
+function renderPR(el){
+  const role=DB.currentUser.role;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Purchase Requests</h1><p>Track procurement from request to stock update</p></div>
+    <div class="page-header-right">
+      <button class="btn btn-ghost" onclick="exportPR()">${icon('download')} Export Excel</button>
+      ${role==='project_coordinator'||role==='store_manager'?`<button class="btn btn-primary" onclick="showNewPRModal()">${icon('plus')} New PR</button>`:''}
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">${icon('search')}<input class="input-field input-search" id="pr-search" type="text" placeholder="Search purchase requests..." oninput="renderPRTable()"></div>
+    <select class="input-field" id="pr-status" onchange="renderPRTable()">
+      <option value="">All Status</option>
+      <option value="open">Open</option><option value="quotation">Quotation Added</option>
+      <option value="po_raised">PO Raised</option><option value="closed">Closed</option>
+    </select>
+  </div>
+  <div class="card"><div class="table-wrap" id="pr-table-wrap"></div></div>`;
+  renderPRTable();
+}
+function renderPRTable(){
+  const q=(document.getElementById('pr-search')?.value||'').toLowerCase();
+  const sf=document.getElementById('pr-status')?.value||'';
+  let items=DB.purchaseRequests.filter(p=>{
+    if(q&&!p.id.toLowerCase().includes(q)&&!p.component.toLowerCase().includes(q)&&!p.gpn.toLowerCase().includes(q))return false;
+    if(sf&&p.status!==sf)return false;
+    return true;
+  });
+  const wrap=document.getElementById('pr-table-wrap');
+  if(!wrap)return;
+  const role=DB.currentUser.role;
+  wrap.innerHTML=`<table>
+    <thead><tr><th>PR Number</th><th>Component</th><th>Galaxi PN</th><th>Qty</th><th>Project</th><th>Requested by</th><th>Supplier</th><th>Quotation</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${items.map(p=>{
+      const [tc,tl]=prStatusTag(p.status);
+      return`<tr>
+        <td class="td-main td-mono">${p.id}</td>
+        <td class="td-main">${p.component}</td>
+        <td class="td-mono">${p.gpn}</td>
+        <td class="td-mono">${p.qty}</td>
+        <td style="color:var(--text3)">${p.project}</td>
+        <td>${p.by}</td>
+        <td>${p.supplier||'<span style="color:var(--text3)">—</span>'}</td>
+        <td class="td-mono">${p.quotation||'<span style="color:var(--text3)">—</span>'}</td>
+        <td><span class="tag ${tc}">${tl}</span></td>
+        <td>
+          <div style="display:flex;gap:4px">
+            ${role==='purchase_team'&&p.status==='open'?`<button class="btn btn-ghost btn-sm" onclick="addQuotation('${p.id}')">${icon('edit',11)} Quote</button>`:''}
+            ${role==='purchase_team'&&p.status==='quotation'?`<button class="btn btn-primary btn-sm" onclick="raisePO('${p.id}')">${icon('send',11)} Raise PO</button>`:''}
+            ${role==='purchase_team'&&p.status==='po_raised'?`<button class="btn btn-primary btn-sm" onclick="closePR('${p.id}')">${icon('check',11)} Close PR</button>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="viewPR('${p.id}')">${icon('eye',11)}</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+function addQuotation(id){
+  const p=DB.purchaseRequests.find(x=>x.id===id);if(!p)return;
+  openModal('Add Quotation — '+id,`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">SUPPLIER NAME</label><input class="form-control" id="aq-supplier" placeholder="e.g. Mouser Electronics"></div>
+      <div class="form-group"><label class="form-label">QUOTATION AMOUNT</label><input class="form-control" id="aq-quote" placeholder="e.g. ₹12,500"></div>
+      <div class="form-group span2"><label class="form-label">NOTES</label><textarea class="form-control" id="aq-notes" placeholder="Delivery time, terms, etc."></textarea></div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveQuotation('${id}')">Save Quotation</button>`);
+}
+function saveQuotation(id){
+  const p=DB.purchaseRequests.find(x=>x.id===id);if(!p)return;
+  p.supplier=document.getElementById('aq-supplier').value;
+  p.quotation=document.getElementById('aq-quote').value;
+  p.status='quotation';
+  closeModal();
+  toast('Quotation saved for '+id);
+  renderPR(document.getElementById('pg-pr'));
+}
+function raisePO(id){
+  const p=DB.purchaseRequests.find(x=>x.id===id);if(!p)return;
+  p.status='po_raised';
+  toast('PO raised for '+id);
+  renderPR(document.getElementById('pg-pr'));
+}
+function closePR(id){
+  const p=DB.purchaseRequests.find(x=>x.id===id);if(!p)return;
+  p.status='closed';
+  const inv=DB.inventory.find(i=>i.id===p.gpn);
+  if(inv){inv.qty+=p.qty;DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:p.gpn,desc:p.component,type:'received',qty:p.qty,ref:id,project:p.project,user:DB.currentUser.name.split(' ')[0]});}
+  toast('PR '+id+' closed — stock updated');
+  renderPR(document.getElementById('pg-pr'));
+}
+function viewPR(id){
+  const p=DB.purchaseRequests.find(x=>x.id===id);if(!p)return;
+  const [tc,tl]=prStatusTag(p.status);
+  openModal(p.id+' — '+p.component,`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><div class="form-label" style="margin-bottom:4px">GALAXI PN</div><div class="td-mono">${p.gpn}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">QUANTITY</div><div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--info)">${p.qty}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">PROJECT</div><div>${p.project}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">STATUS</div><span class="tag ${tc}">${tl}</span></div>
+      <div><div class="form-label" style="margin-bottom:4px">SUPPLIER</div><div>${p.supplier||'Not assigned'}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">QUOTATION</div><div class="td-mono" style="color:var(--accent)">${p.quotation||'Pending'}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">REQUESTED BY</div><div>${p.by}</div></div>
+      <div><div class="form-label" style="margin-bottom:4px">DATE</div><div style="color:var(--text3)">${p.createdAt}</div></div>
+    </div>
+  `);
+}
+function showNewPRModal(){
+  openModal('New Purchase Request',`
+    <div class="form-grid">
+      <div class="form-group span2"><label class="form-label">COMPONENT</label><input class="form-control" id="np-comp" placeholder="Component description"></div>
+      <div class="form-group"><label class="form-label">GALAXI PN</label>
+        <input class="form-control" id="np-gpn" placeholder="GX-XXX-000" list="pr-datalist">
+        <datalist id="pr-datalist">${DB.inventory.map(i=>`<option value="${i.id}">${i.desc}</option>`).join('')}</datalist>
+      </div>
+      <div class="form-group"><label class="form-label">QUANTITY</label><input class="form-control" id="np-qty" type="number" min="1" value="1"></div>
+      <div class="form-group"><label class="form-label">PROJECT</label>
+        <select class="form-control" id="np-project">
+          <option value="General Stock">General Stock</option>
+          ${DB.workorders.filter(w=>w.status==='active').map(w=>`<option value="${w.title}">${w.title}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">URGENCY</label>
+        <select class="form-control" id="np-urgency"><option>Normal</option><option>Urgent</option><option>Critical</option></select>
+      </div>
+    </div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="submitPR()">Submit PR</button>`);
+}
+function submitPR(){
+  const comp=document.getElementById('np-comp').value.trim();
+  const gpn=document.getElementById('np-gpn').value.trim();
+  const qty=parseInt(document.getElementById('np-qty').value)||0;
+  if(!comp||qty<1){toast('Component and quantity are required','error');return;}
+  const id='PR-'+new Date().getFullYear()+'-'+String(DB.purchaseRequests.length+19).padStart(3,'0');
+  DB.purchaseRequests.unshift({id,component:comp,gpn:gpn||'TBD',qty,project:document.getElementById('np-project').value,by:DB.currentUser.name,byId:DB.currentUser.id,supplier:'',quotation:'',status:'open',createdAt:new Date().toISOString().slice(0,10)});
+  closeModal();
+  toast('PR '+id+' submitted to purchase team');
+  renderPR(document.getElementById('pg-pr'));
+}
+function exportPR(){
+  const header='PR Number,Component,Galaxi PN,Qty,Project,Requested by,Supplier,Quotation,Status\n';
+  const rows=DB.purchaseRequests.map(p=>`${p.id},"${p.component}",${p.gpn},${p.qty},"${p.project}",${p.by},"${p.supplier}","${p.quotation}",${p.status}`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='purchase_requests.csv';a.click();
+  toast('PR list exported');
+}
+
+// ── GRN ──
+function renderGRN(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Goods Inward & QC</h1><p>Receive materials, perform QC, and update stock</p></div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="showNewGRNModal()">${icon('plus')} New GRN</button>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Quick GRN Entry</div></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">PO / PR REFERENCE</label><input class="form-control" id="grn-pr" placeholder="PR-2024-017"></div>
+          <div class="form-group"><label class="form-label">SUPPLIER</label><input class="form-control" id="grn-sup" placeholder="Mouser Electronics"></div>
+          <div class="form-group"><label class="form-label">GALAXI PN</label>
+            <input class="form-control" id="grn-gpn" placeholder="GX-XXX-000" list="grn-datalist">
+            <datalist id="grn-datalist">${DB.inventory.map(i=>`<option value="${i.id}">${i.desc}</option>`).join('')}</datalist>
+          </div>
+          <div class="form-group"><label class="form-label">QTY RECEIVED</label><input class="form-control" id="grn-qty" type="number" min="1" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">QC STATUS</label>
+            <select class="form-control" id="grn-qc"><option value="pending">Pending</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">STORAGE LOCATION</label><input class="form-control" id="grn-loc" placeholder="Rack A2-B3"></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;justify-content:center" onclick="submitGRN()">
+          ${icon('package')} Save GRN & Update Stock
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Recent GRNs</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>GRN</th><th>Component</th><th>Qty</th><th>QC</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>${DB.grn.map(g=>{
+            const [qt,ql]=grnQcTag(g.qcStatus);
+            const [st,sl]=grnStatusTag(g.status);
+            return`<tr>
+              <td class="td-main td-mono">${g.id}</td>
+              <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.component}</td>
+              <td class="td-mono">${g.qtyReceived}</td>
+              <td><span class="tag ${qt}">${ql}</span></td>
+              <td><span class="tag ${st}">${sl}</span></td>
+              <td>
+                ${g.qcStatus==='pending'?`<button class="btn btn-primary btn-sm" onclick="passQC('${g.id}')">${icon('check',11)}</button><button class="btn btn-danger btn-sm" onclick="failQC('${g.id}')">${icon('x',11)}</button>`:''}
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">QC Statistics</div></div>
+    <div class="card-body">
+      <div class="grid3">
+        <div style="text-align:center">
+          <div style="font-size:32px;font-weight:700;font-family:var(--mono);color:var(--accent)">${DB.grn.filter(g=>g.qcStatus==='pass').length}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">QC PASSED</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:32px;font-weight:700;font-family:var(--mono);color:var(--warn)">${DB.grn.filter(g=>g.qcStatus==='pending').length}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">PENDING QC</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:32px;font-weight:700;font-family:var(--mono);color:var(--danger)">${DB.grn.filter(g=>g.qcStatus==='fail').length}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">QC FAILED</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function submitGRN(){
+  const gpn=document.getElementById('grn-gpn').value.trim();
+  const qty=parseInt(document.getElementById('grn-qty').value)||0;
+  const qc=document.getElementById('grn-qc').value;
+  const sup=document.getElementById('grn-sup').value.trim();
+  const pr=document.getElementById('grn-pr').value.trim();
+  const loc=document.getElementById('grn-loc').value.trim();
+  if(!gpn||qty<1){toast('Component and quantity are required','error');return;}
+  const inv=DB.inventory.find(i=>i.id===gpn);
+  const id='GRN-'+String(DB.grn.length+109).padStart(3,'0');
+  const grnEntry={id,prRef:pr||'MANUAL',component:inv?.desc||gpn,gpn,supplier:sup,qtyReceived:qty,qcStatus:qc,location:loc||'Quarantine',status:qc==='pass'?'stocked':qc==='fail'?'rejected':'qc_hold',createdAt:new Date().toISOString().slice(0,10),by:DB.currentUser.name};
+  DB.grn.unshift(grnEntry);
+  if(qc==='pass'&&inv){
+    inv.qty+=qty;
+    if(loc)inv.location=loc;
+    DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn,desc:inv.desc,type:'received',qty,ref:id,project:'—',user:DB.currentUser.name.split(' ')[0]});
+    toast(id+' saved — '+qty+' units stocked');
+  } else {
+    toast(id+' saved — awaiting QC decision',qc==='fail'?'error':'info');
+  }
+  renderGRN(document.getElementById('pg-grn'));
+}
+function passQC(id){
+  const g=DB.grn.find(x=>x.id===id);if(!g)return;
+  g.qcStatus='pass';g.status='stocked';
+  const inv=DB.inventory.find(i=>i.id===g.gpn);
+  if(inv){inv.qty+=g.qtyReceived;DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:g.gpn,desc:g.component,type:'received',qty:g.qtyReceived,ref:id,project:'—',user:DB.currentUser.name.split(' ')[0]});}
+  toast(id+' QC passed — stock updated');
+  renderGRN(document.getElementById('pg-grn'));
+}
+function failQC(id){
+  const g=DB.grn.find(x=>x.id===id);if(!g)return;
+  g.qcStatus='fail';g.status='rejected';g.location='Rejected Bin';
+  DB.movements.unshift({date:new Date().toISOString().slice(0,16).replace('T',' '),gpn:g.gpn,desc:g.component,type:'rejected',qty:g.qtyReceived,ref:id,project:'—',user:DB.currentUser.name.split(' ')[0]});
+  toast(id+' QC failed — items moved to reject bin','error');
+  renderGRN(document.getElementById('pg-grn'));
+}
+function showNewGRNModal(){toast('Use the Quick GRN Entry panel on this page','info');}
+
+// ── SETTINGS ──
+function renderSettings(el){
+  const u=DB.currentUser;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-header-left"><h1>Settings</h1><p>Profile, preferences, and system configuration</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Your Profile</div></div>
+      <div class="card-body">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+          <div style="width:56px;height:56px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#0d0f0e;font-family:var(--mono)">${u.initials}</div>
+          <div>
+            <div style="font-size:16px;font-weight:600">${u.name}</div>
+            <div style="font-size:12px;color:var(--text3);font-family:var(--mono);margin-top:2px">${DB.roleLabels[u.role]}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Accessible modules for your role:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${(PERMS[u.role]||[]).map(p=>`<span class="tag tag-blue">${p}</span>`).join('')}
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';buildLoginUsers();toast('Signed out','info')">
+            ${icon('x',11)} Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">System Status</div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:12px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Total inventory items</span><span class="td-mono" style="color:var(--accent)">${DB.inventory.length}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Total units in stock</span><span class="td-mono" style="color:var(--text)">${DB.inventory.reduce((s,i)=>s+i.qty,0).toLocaleString()}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Low stock alerts</span><span class="td-mono" style="color:var(--warn)">${DB.inventory.filter(i=>i.qty<=i.alert).length}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Active work orders</span><span class="td-mono" style="color:var(--info)">${DB.workorders.filter(w=>w.status==='active').length}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Pending approvals</span><span class="td-mono" style="color:var(--danger)">${DB.workorders.filter(w=>w.status==='erp_review'||w.status==='cto_approval').length+DB.itemCodes.filter(i=>i.status==='pending').length}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Open purchase requests</span><span class="td-mono" style="color:var(--yellow)">${DB.purchaseRequests.filter(p=>p.status==='open').length}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Stock movements logged</span><span class="td-mono">${DB.movements.length}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">All Users & Roles</div></div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Role</th><th>Accessible Modules</th></tr></thead>
+          <tbody>${DB.users.map(usr=>`<tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:24px;height:24px;border-radius:50%;background:${usr.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d0f0e;font-family:var(--mono)">${usr.initials}</div>
+                <span style="font-weight:${usr.id===u.id?'600':'400'}">${usr.name}${usr.id===u.id?' (you)':''}</span>
+              </div>
+            </td>
+            <td><span class="tag tag-gray">${DB.roleLabels[usr.role]}</span></td>
+            <td style="font-size:11px;color:var(--text3)">${(PERMS[usr.role]||[]).join(', ')}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── GLOBAL SEARCH ──
+function globalSearch(q){
+  if(!q.trim())return;
+  if(q.startsWith('GX-')){showPage('inventory');setTimeout(()=>{const s=document.getElementById('inv-table-wrap')?.closest('.page');if(s){invFilter.search=q;renderInvTable();}},100);}
+  else if(q.startsWith('WO-')){showPage('workorders');}
+  else if(q.startsWith('PR-')){showPage('pr');}
+  else if(q.startsWith('IC-')){showPage('itemcodes');}
+}
+
+// ── NOTIFICATIONS ──
+function toggleNotifications(){
+  const lowStock=DB.inventory.filter(i=>i.qty<=i.alert);
+  const pending=DB.workorders.filter(w=>w.status==='erp_review'||w.status==='cto_approval');
+  const msgs=[
+    ...lowStock.slice(0,3).map(i=>`Low stock: ${i.id} (${i.qty} remaining, limit ${i.alert})`),
+    ...pending.slice(0,2).map(w=>`WO pending: ${w.id} — ${w.title}`),
+  ];
+  if(!msgs.length){toast('No new notifications','info');return;}
+  openModal('Notifications',`<div style="display:flex;flex-direction:column;gap:8px">
+    ${msgs.map(m=>`<div class="alert-banner alert-warn">${icon('alert-triangle')} ${m}</div>`).join('')}
+  </div>`);
+}
+
+// ── INIT ──
+buildLoginUsers();
+</script>
+</body>
+</html>
