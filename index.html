@@ -264,15 +264,47 @@ section{padding:110px 5%}
 .exp-tag span{font-size:.86rem;font-weight:600;color:var(--g)}
 
 /* ── APPLICATIONS ── */
-.apps{background:var(--ink)}
-.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:48px}
-.apc{background:var(--ink3);border:1px solid var(--bdr);border-radius:12px;padding:22px 16px;transition:border-color .2s,transform .2s}
-.apc:hover{border-color:rgba(0,168,107,.3);transform:translateY(-4px)}
-.apc.new{border-color:rgba(245,166,35,.17)}
-.ap-em{font-size:1.7rem;margin-bottom:11px;display:block}
-.apc h3{font-size:.86rem;font-weight:700;margin-bottom:5px}
-.apc p{font-size:.74rem;color:var(--muted);line-height:1.5}
-.ntag{display:inline-block;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.2);color:var(--amber);font-size:.52rem;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:100px;text-transform:uppercase;vertical-align:middle;margin-left:5px}
+/* ── APPLICATIONS EXPANDED ── */
+.apps-expanded{background:var(--ink)}
+.apps-intro{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+/* Primary badge */
+.app-primary-badge{display:inline-flex;align-items:center;gap:6px;background:var(--gdim);border:1px solid rgba(0,168,107,.25);border-radius:100px;padding:5px 14px;font-size:.66rem;font-weight:700;color:var(--g);letter-spacing:.1em;text-transform:uppercase;width:fit-content;margin-bottom:20px}
+/* Category block */
+.app-cat{margin-bottom:56px}
+.app-cat:last-child{margin-bottom:0}
+.app-cat-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--bdr)}
+.app-cat-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.aci-g{background:var(--gdim);border:1px solid rgba(0,168,107,.22)}
+.aci-b{background:rgba(75,158,255,.07);border:1px solid rgba(75,158,255,.2)}
+.aci-r{background:rgba(255,90,90,.06);border:1px solid rgba(255,90,90,.18)}
+.aci-a{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2)}
+.aci-p{background:rgba(160,0,255,.06);border:1px solid rgba(160,0,255,.2)}
+.aci-o{background:rgba(255,140,0,.06);border:1px solid rgba(255,140,0,.2)}
+.aci-t{background:rgba(0,200,200,.06);border:1px solid rgba(0,200,200,.2)}
+.app-cat-meta{flex:1}
+.app-cat-label{font-size:.64rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.cl-g{color:var(--g)}.cl-b{color:var(--blue)}.cl-r{color:#FF6B6B}.cl-a{color:var(--amber)}.cl-p{color:#B44DFF}.cl-o{color:#FF8C00}.cl-t{color:#00C8C8}
+.app-cat-meta h3{font-size:1.15rem;font-weight:800;margin-bottom:4px}
+.app-cat-msg{font-size:.84rem;color:var(--muted);font-style:italic}
+/* primary / secondary badge on header */
+.cat-badge{display:inline-flex;align-items:center;border-radius:100px;padding:3px 10px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-left:10px;vertical-align:middle}
+.cb-primary{background:rgba(0,168,107,.1);color:var(--g);border:1px solid rgba(0,168,107,.25)}
+.cb-secondary{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.25)}
+/* use case cards grid */
+.uc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.uc{background:var(--ink3);border:1px solid var(--bdr);border-radius:10px;padding:18px 16px;transition:border-color .2s,transform .2s;display:flex;gap:12px;align-items:flex-start}
+.uc:hover{border-color:rgba(0,168,107,.3);transform:translateY(-3px)}
+.uc-em{font-size:1.5rem;flex-shrink:0;margin-top:2px}
+.uc-text h4{font-size:.86rem;font-weight:700;margin-bottom:3px}
+.uc-text p{font-size:.74rem;color:var(--muted);line-height:1.48}
+/* divider between primary and secondary */
+.sec-divider{display:flex;align-items:center;gap:16px;margin:60px 0 52px;opacity:.6}
+.sec-divider::before,.sec-divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
+.sec-divider span{font-size:.68rem;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+/* responsive */
+@media(max-width:960px){.uc-grid{grid-template-columns:repeat(2,1fr)}.app-cat-header{gap:14px}.app-cat-icon{width:44px;height:44px;font-size:1.3rem}}
+@media(max-width:600px){.uc-grid{grid-template-columns:repeat(2,1fr);gap:8px}.uc{padding:14px 12px}.app-cat-header{flex-direction:column;gap:12px}.uc-em{font-size:1.3rem}}
+@media(max-width:400px){.uc-grid{grid-template-columns:1fr 1fr}}
 
 /* ── TECHNOLOGY ── */
 .tech{background:var(--ink2)}
@@ -428,7 +460,7 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
    RESPONSIVE
 ━━━━━━━━━━━━━━━━━ */
 @media(min-width:1440px){section{padding:130px 8%}nav,footer{padding-left:8%;padding-right:8%}.signal,.cta-block,#topbar{padding-left:8%;padding-right:8%}.hero{padding:150px 8% 100px;gap:80px}}
-@media(max-width:1100px){.pillars{grid-template-columns:1fr 1fr}.app-grid{grid-template-columns:repeat(3,1fr)}.blk-diag{position:static}}
+@media(max-width:1100px){.pillars{grid-template-columns:1fr 1fr}.blk-diag{position:static}}
 @media(max-width:960px){
   nav{top:38px}
   .hero{grid-template-columns:1fr;padding:140px 5% 70px;text-align:center;gap:38px}
@@ -443,7 +475,7 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
   .port-vis img{max-width:100%}
   .batt-lay{grid-template-columns:1fr;gap:40px}.batt-vis{max-width:500px;margin:0 auto;width:100%}
   .batt-vis img{max-width:100%}
-  .app-grid{grid-template-columns:repeat(2,1fr)}
+  
   .tech-lay{grid-template-columns:1fr;gap:36px}
   .tc-grid{grid-template-columns:1fr 1fr}.trust-bot{grid-template-columns:1fr;gap:32px}
   .peace-grid{grid-template-columns:1fr 1fr}
@@ -454,7 +486,7 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
   nav .nlinks{display:none}.hbg{display:flex}
   .cmp-head,.cmp-row{grid-template-columns:1.8fr 1fr 1fr}
 }
-@media(max-width:768px){section{padding:78px 5%}.hero{padding:120px 5% 56px;gap:28px}.hero h1{font-size:clamp(2.5rem,8vw,3.8rem)}.app-grid{grid-template-columns:repeat(2,1fr)}.tc-grid{grid-template-columns:1fr}.peace-grid{grid-template-columns:1fr}.dc-grid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.fb{grid-column:auto}.cmp-head,.cmp-row{grid-template-columns:1.5fr 1fr 1fr}.tb-sts{grid-template-columns:1fr 1fr}.sh{font-size:clamp(1.9rem,5vw,2.8rem)}}
+@media(max-width:768px){section{padding:78px 5%}.hero{padding:120px 5% 56px;gap:28px}.hero h1{font-size:clamp(2.5rem,8vw,3.8rem)}.tc-grid{grid-template-columns:1fr}.peace-grid{grid-template-columns:1fr}.dc-grid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.fb{grid-column:auto}.cmp-head,.cmp-row{grid-template-columns:1.5fr 1fr 1fr}.tb-sts{grid-template-columns:1fr 1fr}.sh{font-size:clamp(1.9rem,5vw,2.8rem)}}
 @media(max-width:600px){
   #topbar{height:34px}#topbar span{font-size:.7rem}
   nav{top:34px;height:58px;padding:0 4%}nav.tb-gone{top:0}
@@ -462,7 +494,7 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
   .hero-sub{font-size:.9rem}.hero-pill{font-size:.76rem}
   .ctag{flex-direction:column;align-items:center}.bp,.bo,.bg{width:100%;max-width:290px;text-align:center;padding:13px 18px}
   .pr-row{flex-direction:column;align-items:center;gap:10px}.pr-pill{width:100%;max-width:270px}
-  .app-grid{grid-template-columns:1fr 1fr;gap:9px}.apc{padding:16px 12px}
+  .apc{padding:16px 12px}
   .stats{grid-template-columns:repeat(2,1fr)}.stbn{font-size:2.1rem}
   .form-card{padding:24px 16px}.fr{grid-template-columns:1fr}
   section{padding:64px 4%}.cta-block{padding:52px 4%}.final{padding:84px 4%}
@@ -474,7 +506,7 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
 @media(max-width:480px){
   .hero h1{font-size:clamp(1.95rem,10vw,2.7rem)}
   .hero-vis img,.port-vis img,.batt-vis img{border-radius:10px}
-  .app-grid{grid-template-columns:1fr 1fr}
+  
   .pillars{gap:2px}
   .ai-inputs{grid-template-columns:1fr 1fr}
   .tech-kpis{grid-template-columns:1fr 1fr}
@@ -747,22 +779,139 @@ footer{background:var(--ink3);border-top:1px solid var(--bdr);padding:60px 5% 32
 </section>
 
 <!-- APPLICATIONS -->
-<section class="apps" id="usecases">
+<section class="apps-expanded" id="usecases">
   <div class="cx">
-    <div class="st">Real World Use</div>
-    <h2 class="sh">Designed for Real<br><em>Indian Homes</em></h2>
-    <p class="sp cx">From essential backup to full energy independence.</p>
+    <div class="st">Applications &amp; Use Cases</div>
+    <h2 class="sh">Designed for Homes,<br><em>Businesses, and Beyond</em></h2>
+    <p class="sp cx">One modular smart energy system — infinite real-world applications. From daily home life to critical business operations.</p>
   </div>
-  <div class="app-grid rev">
-    <div class="apc"><span class="ap-em">💡</span><h3>Lights + Fans + TV + WiFi</h3><p>Full home essentials, all night, no interruption.</p></div>
-    <div class="apc"><span class="ap-em">🧊</span><h3>Refrigerator Backup</h3><p>Keep food safe through long cuts effortlessly.</p></div>
-    <div class="apc"><span class="ap-em">💻</span><h3>Work From Home</h3><p>Computers, monitors, networks — always on.</p></div>
-    <div class="apc"><span class="ap-em">🌙</span><h3>Night Backup</h3><p>Full night coverage charged from solar by day.</p></div>
-    <div class="apc"><span class="ap-em">☀️</span><h3>Solar Homes</h3><p>Store solar and power your nights for free.</p></div>
-    <div class="apc"><span class="ap-em">❄️</span><h3>Inverter AC (3kW)</h3><p>1-ton inverter AC for limited hours on 3kW.</p></div>
-    <div class="apc new"><span class="ap-em">🚶</span><h3>Room to Room<span class="ntag">NEW</span></h3><p>Move it wherever you need power inside.</p></div>
-    <div class="apc new"><span class="ap-em">🌿</span><h3>Outdoor Power<span class="ntag">NEW</span></h3><p>Balcony, terrace, covered outdoor spaces.</p></div>
+
+  <!-- PRIMARY: HOME -->
+  <div class="app-cat rev" style="margin-top:60px">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-g">🏠</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-g">Category 01 <span class="cat-badge cb-primary">PRIMARY</span></div>
+        <h3>Home Application</h3>
+        <div class="app-cat-msg">Reliable power for everyday living</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">💡</span><div class="uc-text"><h4>Lights + Fans + TV + WiFi</h4><p>Full home essentials running all night without interruption</p></div></div>
+      <div class="uc"><span class="uc-em">🧊</span><div class="uc-text"><h4>Refrigerator Backup</h4><p>Keep food safe through long power cuts effortlessly</p></div></div>
+      <div class="uc"><span class="uc-em">💻</span><div class="uc-text"><h4>Work From Home</h4><p>Uninterrupted power for computers, monitors, and networks</p></div></div>
+      <div class="uc"><span class="uc-em">🌙</span><div class="uc-text"><h4>Night Backup</h4><p>Full night coverage charged by solar during the day</p></div></div>
+      <div class="uc"><span class="uc-em">☀️</span><div class="uc-text"><h4>Solar Homes</h4><p>Store daytime solar and power your nights for free</p></div></div>
+      <div class="uc"><span class="uc-em">❄️</span><div class="uc-text"><h4>Inverter AC (3kW)</h4><p>Run a 1-ton inverter AC for limited hours on the 3kW model</p></div></div>
+    </div>
   </div>
+
+  <!-- PRIMARY: SMALL BUSINESS -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-b">🏪</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-b">Category 02 <span class="cat-badge cb-primary">PRIMARY</span></div>
+        <h3>Small Business &amp; Commercial</h3>
+        <div class="app-cat-msg">Keep your business running without interruptions</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">🛍️</span><div class="uc-text"><h4>Retail Shops</h4><p>POS systems, lighting, and fans always on — never lose a sale</p></div></div>
+      <div class="uc"><span class="uc-em">🏢</span><div class="uc-text"><h4>Commercial Complexes</h4><p>Common area lighting, lifts, and essential systems backed up</p></div></div>
+      <div class="uc"><span class="uc-em">🗂️</span><div class="uc-text"><h4>Offices</h4><p>Computers, servers, networking, and lighting — zero downtime</p></div></div>
+      <div class="uc"><span class="uc-em">🔧</span><div class="uc-text"><h4>Small Service Centers</h4><p>Equipment and service bays powered through any outage</p></div></div>
+    </div>
+  </div>
+
+  <!-- divider -->
+  <div class="sec-divider"><span>Secondary Applications</span></div>
+
+  <!-- MEDICAL -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-r">🏥</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-r">Category 03 <span class="cat-badge cb-secondary">SECONDARY</span></div>
+        <h3>Medical &amp; Critical Applications</h3>
+        <div class="app-cat-msg">Reliable backup for critical equipment</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">🧪</span><div class="uc-text"><h4>Medical Testing Labs</h4><p>Sensitive equipment and samples protected from power cuts</p></div></div>
+      <div class="uc"><span class="uc-em">🩺</span><div class="uc-text"><h4>Diagnostic Centers</h4><p>Imaging and diagnostic machines need uninterrupted power</p></div></div>
+      <div class="uc"><span class="uc-em">🏨</span><div class="uc-text"><h4>Small Clinics</h4><p>Patient care continuity with reliable backup power always ready</p></div></div>
+    </div>
+  </div>
+
+  <!-- DIGITAL & SERVICE -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-a">💻</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-a">Category 04 <span class="cat-badge cb-secondary">SECONDARY</span></div>
+        <h3>Digital &amp; Service Centers</h3>
+        <div class="app-cat-msg">Continuous operation for customer-facing services</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">🖨️</span><div class="uc-text"><h4>Xerox &amp; Print Shops</h4><p>Printers and computers never stop — serve every customer</p></div></div>
+      <div class="uc"><span class="uc-em">🌐</span><div class="uc-text"><h4>Browsing Centers</h4><p>All systems and internet connections stay live through cuts</p></div></div>
+      <div class="uc"><span class="uc-em">☕</span><div class="uc-text"><h4>Internet Cafes</h4><p>Keep every workstation powered and customers happy</p></div></div>
+    </div>
+  </div>
+
+  <!-- ATM & INFRASTRUCTURE -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-p">🏧</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-p">Category 05 <span class="cat-badge cb-secondary">SECONDARY</span></div>
+        <h3>ATM &amp; Infrastructure</h3>
+        <div class="app-cat-msg">Uninterrupted service and uptime</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">🏧</span><div class="uc-text"><h4>ATM Machines</h4><p>24/7 availability — modular power keeps ATMs always online</p></div></div>
+      <div class="uc"><span class="uc-em">🏦</span><div class="uc-text"><h4>Banking Kiosks</h4><p>Critical financial infrastructure never goes offline mid-transaction</p></div></div>
+    </div>
+  </div>
+
+  <!-- LIGHT INDUSTRY -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-o">🏭</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-o">Category 06 <span class="cat-badge cb-secondary">SECONDARY</span></div>
+        <h3>Light Industry</h3>
+        <div class="app-cat-msg">Stable power for essential operations</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">🔩</span><div class="uc-text"><h4>Small-Scale Industries</h4><p>Low-to-medium load equipment and lighting backed up reliably</p></div></div>
+      <div class="uc"><span class="uc-em">🛠️</span><div class="uc-text"><h4>Workshops</h4><p>Tools, compressors, and lighting — production keeps moving</p></div></div>
+      <div class="uc"><span class="uc-em">⚙️</span><div class="uc-text"><h4>Production Units</h4><p>Stable power for essential low-to-medium load operations</p></div></div>
+    </div>
+  </div>
+
+  <!-- PORTABLE -->
+  <div class="app-cat rev">
+    <div class="app-cat-header">
+      <div class="app-cat-icon aci-t">🎒</div>
+      <div class="app-cat-meta">
+        <div class="app-cat-label cl-t">Category 07 <span class="cat-badge cb-secondary">SECONDARY</span></div>
+        <h3>Portable &amp; Flexible Usage</h3>
+        <div class="app-cat-msg">Take power wherever you need it</div>
+      </div>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-em">⛺</span><div class="uc-text"><h4>Camping</h4><p>Basic lighting, charging, and fans for off-grid locations</p></div></div>
+      <div class="uc"><span class="uc-em">🎪</span><div class="uc-text"><h4>Outdoor Events</h4><p>Power for sound, lighting, and equipment at any venue</p></div></div>
+      <div class="uc"><span class="uc-em">🏗️</span><div class="uc-text"><h4>Temporary Setups</h4><p>Site offices, pop-up spaces, and short-term power needs</p></div></div>
+      <div class="uc"><span class="uc-em">🛒</span><div class="uc-text"><h4>Food Carts &amp; Mobile Stalls</h4><p>Refrigeration, lighting, and equipment for mobile businesses</p></div></div>
+    </div>
+  </div>
+
 </section>
 
 <!-- TECHNOLOGY -->
